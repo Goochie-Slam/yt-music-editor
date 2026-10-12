@@ -59,6 +59,10 @@ class Settings:
         return {f"http://{h}" for h in self.allowed_hosts}
 
     @property
+    def default_projects_dir(self) -> Path:
+        return Path.home() / "Documents" / "YT Music Editor"
+
+    @property
     def presets_dir(self) -> Path:
         return self.data_dir / "presets"
 

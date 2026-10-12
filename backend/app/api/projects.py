@@ -37,7 +37,10 @@ def recent(request: Request) -> list[ProjectSummary]:
 
 @router.post("")
 def create(body: CreateBody, request: Request) -> Opened:
-    project, folder = _store(request).create(body.name.strip(), Path(body.parent_dir))
+    parent = Path(body.parent_dir)
+    if parent == request.app.state.settings.default_projects_dir:
+        parent.mkdir(parents=True, exist_ok=True)  # only our own default folder is auto-created
+    project, folder = _store(request).create(body.name.strip(), parent)
     return Opened(project=project, path=str(folder))
 
 

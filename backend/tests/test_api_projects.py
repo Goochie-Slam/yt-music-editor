@@ -113,3 +113,16 @@ def test_open_errors(client: TestClient, projects_dir: Path) -> None:
 def test_create_in_missing_folder(client: TestClient, projects_dir: Path) -> None:
     r = client.post("/api/projects", json={"name": "x", "parentDir": str(projects_dir / "missing")})
     assert r.status_code == 400 and r.json()["code"] == "folder_not_found"
+
+
+def test_default_projects_dir_is_created_on_demand(
+    client: TestClient,
+    settings,
+    tmp_path: Path,
+    monkeypatch,  # type: ignore[no-untyped-def]
+) -> None:
+    monkeypatch.setattr(Path, "home", lambda: tmp_path / "home")
+    target = settings.default_projects_dir
+    assert client.get("/api/system").json()["defaultProjectsDir"] == str(target)
+    r = client.post("/api/projects", json={"name": "Mix 1", "parentDir": str(target)})
+    assert r.status_code == 200 and (target / "Mix 1" / "project.json").exists()

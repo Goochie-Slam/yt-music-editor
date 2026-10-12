@@ -69,9 +69,15 @@ yt-music-editor/
 │   │   ├── core/
 │   │   │   ├── config.py        # đường dẫn app data, port, bin ffmpeg/yt-dlp
 │   │   │   ├── proc.py          # wrapper subprocess DUY NHẤT (xem §6.2)
-│   │   │   ├── jobs.py          # job queue, persist trạng thái, progress
+│   │   │   ├── jobs.py          # job queue, progress, hủy
 │   │   │   ├── events.py        # pub/sub → WebSocket
-│   │   │   └── fsutil.py        # ghi atomic, hash file, dọn cache
+│   │   │   ├── fsutil.py        # ghi atomic + backup, tên thư mục an toàn cho Windows
+│   │   │   ├── projects.py      # folder project + danh sách gần đây
+│   │   │   ├── presets.py       # preset transition có sẵn + của user
+│   │   │   ├── tools.py         # version FFmpeg/yt-dlp, dò NVENC, self-test
+│   │   │   ├── security.py      # chặn Host/Origin lạ (N10)
+│   │   │   ├── errors.py        # AppError → {code, message_vi, detail}
+│   │   │   └── util.py          # new_id, utcnow
 │   │   ├── models/              # pydantic — NGUỒN SỰ THẬT của schema
 │   │   │   ├── project.py  track.py  transition.py  element.py  render.py  preset.py
 │   │   ├── audio/
@@ -132,11 +138,11 @@ yt-music-editor/
 - FFmpeg ≥ 7 có `h264_nvenc` (Windows: bản static build "full"); `yt-dlp.exe`
 - Để trong `backend/bin/` (đã gitignore) hoặc chỉ đường dẫn qua biến môi trường `YTME_FFMPEG`, `YTME_YTDLP`
 
-### Lệnh (sẽ có sau M1)
+### Lệnh
 
 ```bash
 # backend
-cd backend && uv sync && uv run uvicorn app.main:app --host 127.0.0.1 --port 8765 --reload
+cd backend && uv sync && uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8765 --reload
 # frontend (dev, proxy /api → 8765)
 cd frontend && npm ci && npm run dev
 # kiểm tra trước khi mở PR
@@ -145,6 +151,10 @@ cd frontend && npm run lint && npm run typecheck && npm test
 # sinh lại schema + TS types sau khi sửa models/
 cd backend && uv run python -m app.models.export_schema && cd ../frontend && npm run gen:types
 ```
+
+### Chạy trên Windows (Product Owner)
+
+Double-click `packaging\windows\Start.bat`. Lần đầu, script tự tải FFmpeg và yt-dlp vào `backend\bin\` rồi build giao diện, nên cần có [uv](https://docs.astral.sh/uv/) và Node 22. Bản portable không cần cài gì sẽ có ở M7.
 
 ### Dữ liệu app
 - Cài đặt, preset, log: `%APPDATA%\YTMusicEditor\` (Linux dev: `~/.local/share/ytme/`)

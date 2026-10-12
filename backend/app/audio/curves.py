@@ -55,5 +55,6 @@ def fixture_data() -> dict[str, dict[str, list[float]]]:
 
 
 if __name__ == "__main__":
-    FIXTURE.write_text(json.dumps(fixture_data(), indent=1) + "\n", encoding="utf-8")
+    text = json.dumps(fixture_data(), indent=1) + "\n"
+    FIXTURE.write_text(text, encoding="utf-8", newline="\n")  # same bytes on Windows
     print(f"wrote {FIXTURE}")

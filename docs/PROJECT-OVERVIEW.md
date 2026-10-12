@@ -1,7 +1,7 @@
 # YT Music Editor — Project Overview
 
 > Dành cho developer mới tham gia dự án. Đọc file này trước, sau đó đọc [`CODING-GUIDE.md`](./CODING-GUIDE.md).
-> Cập nhật: 2026-10-12 · Trạng thái: **Thiết kế xong, chưa có code**
+> Cập nhật: 2026-10-12 · Trạng thái: **M1 (khung app) xong · M0 chờ chạy benchmark trên máy RTX 3050**
 
 ---
 
@@ -121,8 +121,8 @@ Chi tiết: mục 10 của [`CODING-GUIDE.md`](./CODING-GUIDE.md).
 | Milestone | Nội dung | Trạng thái |
 |---|---|---|
 | Thiết kế | Requirements v0.3, UI/UX v0.3, mockup | ✅ Xong |
-| **M0 — Spike S1** | Benchmark render trên RTX 3050 6GB → chốt kiến trúc render | ⏭ **Làm đầu tiên** |
-| M1 — Skeleton | Repo, CI, backend + frontend khung, project/autosave, đóng gói Windows | ⬜ |
+| **M0 — Spike S1** | Benchmark render trên RTX 3050 6GB → chốt kiến trúc render | 🟡 Script xong (`bench/`) — **chờ PO chạy trên máy thật** |
+| M1 — Skeleton | Repo, CI, backend + frontend khung, project/autosave, đóng gói Windows | ✅ Xong |
 | M2 — Thư viện | Ingest, yt-dlp, tracklist, xuất MP3 | ⬜ |
 | M3 — Mix | Transition, preset, normalize, trim, nghe thử, xuất mix | ⬜ |
 | M4 — Video core | Renderer, scene, artwork/nền, visualizer, chữ, canvas, timeline | ⬜ |

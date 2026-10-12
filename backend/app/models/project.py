@@ -33,6 +33,7 @@ class Model(BaseModel):
         populate_by_name=True,
         extra="forbid",
         serialize_by_alias=True,
+        json_schema_serialization_defaults_required=True,  # server always sends every field
         validate_assignment=True,
     )
 

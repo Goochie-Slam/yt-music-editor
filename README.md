@@ -2,7 +2,13 @@
 
 App local (Windows) để sản xuất video playlist nhạc dài 1–3 tiếng: lấy audio từ file/link → xuất MP3 → ghép mix với transition → render MP4 có overlay, effect, sóng nhạc, tên bài.
 
-> Trạng thái: **thiết kế xong, chưa có code**. Việc tiếp theo: **M0 — Spike S1** (benchmark render).
+> Trạng thái: **M1 (khung app) xong**. M0 — benchmark render: script xong, **chờ chạy trên máy RTX 3050** (`bench/README.md`).
+
+## Chạy thử
+
+- **Windows:** double-click `packaging\windows\Start.bat` (cần [uv](https://docs.astral.sh/uv/) + Node 22).
+- **Dev:** `cd backend && uv sync && uv run uvicorn app.main:create_app --factory --port 8765 --reload` và `cd frontend && npm ci && npm run dev` → http://127.0.0.1:5173
+- **Kiểm tra trước khi mở PR:** xem `docs/CODING-GUIDE.md` §4.
 
 ## Bắt đầu từ đâu
 

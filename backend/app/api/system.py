@@ -30,6 +30,7 @@ def system_info(request: Request) -> dict[str, Any]:
         "python": sys.version.split()[0],
         "os": platform.platform(),
         "dataDir": str(s.data_dir),
+        "defaultProjectsDir": str(s.default_projects_dir),
         "ffmpeg": ffmpeg,
         "ffprobe": {"path": str(s.ffprobe) if s.ffprobe else None},
         "ytdlp": ytdlp,

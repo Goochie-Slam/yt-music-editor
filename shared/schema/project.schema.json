@@ -10,14 +10,12 @@
             "carousel",
             "video"
           ],
-          "title": "Type",
           "type": "string"
         },
         "media": {
           "items": {
             "type": "string"
           },
-          "title": "Media",
           "type": "array"
         },
         "carouselMode": {
@@ -26,48 +24,53 @@
             "song",
             "interval"
           ],
-          "title": "Carouselmode",
           "type": "string"
         },
         "carouselEverySec": {
           "default": 60,
           "minimum": 5,
-          "title": "Carouseleverysec",
           "type": "number"
         },
         "loopCrossfade": {
           "default": true,
-          "title": "Loopcrossfade",
           "type": "boolean"
         },
         "scale": {
           "default": 100,
           "maximum": 150,
           "minimum": 40,
-          "title": "Scale",
           "type": "number"
         },
         "radius": {
           "default": 0,
           "maximum": 60,
           "minimum": 0,
-          "title": "Radius",
           "type": "number"
         },
         "shadow": {
           "default": true,
-          "title": "Shadow",
           "type": "boolean"
         },
         "border": {
           "default": false,
-          "title": "Border",
           "type": "boolean"
         },
         "pos": {
           "$ref": "#/$defs/PosByFormat"
         }
       },
+      "required": [
+        "type",
+        "media",
+        "carouselMode",
+        "carouselEverySec",
+        "loopCrossfade",
+        "scale",
+        "radius",
+        "shadow",
+        "border",
+        "pos"
+      ],
       "title": "Artwork",
       "type": "object"
     },
@@ -81,30 +84,32 @@
             "solid",
             "crop"
           ],
-          "title": "Fit",
           "type": "string"
         },
         "blur": {
           "default": 30,
           "maximum": 60,
           "minimum": 0,
-          "title": "Blur",
           "type": "number"
         },
         "dim": {
           "default": 35,
           "maximum": 80,
           "minimum": 0,
-          "title": "Dim",
           "type": "number"
         },
         "solid": {
           "default": "#14121c",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Solid",
           "type": "string"
         }
       },
+      "required": [
+        "fit",
+        "blur",
+        "dim",
+        "solid"
+      ],
       "title": "Background",
       "type": "object"
     },
@@ -123,15 +128,17 @@
       "properties": {
         "on": {
           "default": false,
-          "title": "On",
           "type": "boolean"
         },
         "value": {
           "default": 0,
-          "title": "Value",
           "type": "number"
         }
       },
+      "required": [
+        "on",
+        "value"
+      ],
       "title": "EffectSetting",
       "type": "object"
     },
@@ -157,6 +164,14 @@
           "$ref": "#/$defs/EffectSetting"
         }
       },
+      "required": [
+        "zoom",
+        "grain",
+        "glow",
+        "dust",
+        "snow",
+        "bokeh"
+      ],
       "title": "Effects",
       "type": "object"
     },
@@ -165,15 +180,17 @@
       "properties": {
         "mixMp3": {
           "default": true,
-          "title": "Mixmp3",
           "type": "boolean"
         },
         "chapters": {
           "default": false,
-          "title": "Chapters",
           "type": "boolean"
         }
       },
+      "required": [
+        "mixMp3",
+        "chapters"
+      ],
       "title": "ExportExtras",
       "type": "object"
     },
@@ -188,7 +205,6 @@
             ],
             "type": "string"
           },
-          "title": "Formats",
           "type": "array"
         },
         "height": {
@@ -198,7 +214,6 @@
             1440,
             2160
           ],
-          "title": "Height",
           "type": "integer"
         },
         "fps": {
@@ -207,7 +222,6 @@
             30,
             60
           ],
-          "title": "Fps",
           "type": "integer"
         },
         "quality": {
@@ -217,7 +231,6 @@
             "balanced",
             "high"
           ],
-          "title": "Quality",
           "type": "string"
         },
         "encoder": {
@@ -227,13 +240,20 @@
             "nvenc",
             "x264"
           ],
-          "title": "Encoder",
           "type": "string"
         },
         "extras": {
           "$ref": "#/$defs/ExportExtras"
         }
       },
+      "required": [
+        "formats",
+        "height",
+        "fps",
+        "quality",
+        "encoder",
+        "extras"
+      ],
       "title": "ExportSettings",
       "type": "object"
     },
@@ -243,15 +263,14 @@
         "kind": {
           "const": "file",
           "default": "file",
-          "title": "Kind",
           "type": "string"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         }
       },
       "required": [
+        "kind",
         "path"
       ],
       "title": "FileSource",
@@ -263,7 +282,6 @@
         "start": {
           "default": 0,
           "minimum": 0,
-          "title": "Start",
           "type": "number"
         },
         "end": {
@@ -276,44 +294,36 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "End"
+          "default": null
         },
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "visible": {
           "default": true,
-          "title": "Visible",
           "type": "boolean"
         },
         "kind": {
           "const": "image",
           "default": "image",
-          "title": "Kind",
           "type": "string"
         },
         "file": {
-          "title": "File",
           "type": "string"
         },
         "size": {
           "default": 9,
           "maximum": 40,
           "minimum": 3,
-          "title": "Size",
           "type": "number"
         },
         "opacity": {
           "default": 80,
           "maximum": 100,
           "minimum": 0,
-          "title": "Opacity",
           "type": "number"
         },
         "pos": {
@@ -321,8 +331,16 @@
         }
       },
       "required": [
+        "start",
+        "end",
+        "id",
         "name",
-        "file"
+        "visible",
+        "kind",
+        "file",
+        "size",
+        "opacity",
+        "pos"
       ],
       "title": "ImageElement",
       "type": "object"
@@ -331,11 +349,9 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "title": {
-          "title": "Title",
           "type": "string"
         },
         "source": {
@@ -357,8 +373,7 @@
             {
               "$ref": "#/$defs/SegmentSource"
             }
-          ],
-          "title": "Source"
+          ]
         },
         "cacheWav": {
           "anyOf": [
@@ -369,8 +384,7 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Cachewav"
+          "default": null
         },
         "duration": {
           "anyOf": [
@@ -382,8 +396,7 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Duration"
+          "default": null
         },
         "srcBitrateKbps": {
           "anyOf": [
@@ -394,8 +407,7 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Srcbitratekbps"
+          "default": null
         },
         "loudness": {
           "anyOf": [
@@ -410,8 +422,13 @@
         }
       },
       "required": [
+        "id",
         "title",
-        "source"
+        "source",
+        "cacheWav",
+        "duration",
+        "srcBitrateKbps",
+        "loudness"
       ],
       "title": "LibraryItem",
       "type": "object"
@@ -420,15 +437,12 @@
       "additionalProperties": false,
       "properties": {
         "integrated": {
-          "title": "Integrated",
           "type": "number"
         },
         "truePeak": {
-          "title": "Truepeak",
           "type": "number"
         },
         "lra": {
-          "title": "Lra",
           "type": "number"
         }
       },
@@ -450,41 +464,43 @@
             -14,
             -12
           ],
-          "title": "Targetlufs",
           "type": "integer"
         },
         "autoTrimSilence": {
           "default": true,
-          "title": "Autotrimsilence",
           "type": "boolean"
         },
         "fadeInStart": {
           "default": 2,
           "minimum": 0,
-          "title": "Fadeinstart",
           "type": "number"
         },
         "fadeOutEnd": {
           "default": 5,
           "minimum": 0,
-          "title": "Fadeoutend",
           "type": "number"
         },
         "tracks": {
           "items": {
             "$ref": "#/$defs/MixTrack"
           },
-          "title": "Tracks",
           "type": "array"
         },
         "transitions": {
           "additionalProperties": {
             "$ref": "#/$defs/Transition"
           },
-          "title": "Transitions",
           "type": "object"
         }
       },
+      "required": [
+        "targetLufs",
+        "autoTrimSilence",
+        "fadeInStart",
+        "fadeOutEnd",
+        "tracks",
+        "transitions"
+      ],
       "title": "Mix",
       "type": "object"
     },
@@ -492,21 +508,17 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "libId": {
-          "title": "Libid",
           "type": "string"
         },
         "title": {
-          "title": "Title",
           "type": "string"
         },
         "trimIn": {
           "default": 0,
           "minimum": 0,
-          "title": "Trimin",
           "type": "number"
         },
         "trimOut": {
@@ -519,20 +531,22 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "Trimout"
+          "default": null
         },
         "gainDb": {
           "default": 0,
           "maximum": 6,
           "minimum": -6,
-          "title": "Gaindb",
           "type": "number"
         }
       },
       "required": [
+        "id",
         "libId",
-        "title"
+        "title",
+        "trimIn",
+        "trimOut",
+        "gainDb"
       ],
       "title": "MixTrack",
       "type": "object"
@@ -541,22 +555,18 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "visible": {
           "default": true,
-          "title": "Visible",
           "type": "boolean"
         },
         "kind": {
           "const": "nowPlaying",
           "default": "nowPlaying",
-          "title": "Kind",
           "type": "string"
         },
         "fmt": {
@@ -566,12 +576,10 @@
             "{index}. {title}",
             "Now Playing — {title}"
           ],
-          "title": "Fmt",
           "type": "string"
         },
         "label": {
           "default": true,
-          "title": "Label",
           "type": "boolean"
         },
         "font": {
@@ -584,20 +592,17 @@
             "Lora",
             "Quicksand"
           ],
-          "title": "Font",
           "type": "string"
         },
         "size": {
           "default": 54,
           "maximum": 200,
           "minimum": 8,
-          "title": "Size",
           "type": "number"
         },
         "color": {
           "default": "#ffffff",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Color",
           "type": "string"
         },
         "anim": {
@@ -607,7 +612,6 @@
             "slide",
             "none"
           ],
-          "title": "Anim",
           "type": "string"
         },
         "pos": {
@@ -615,7 +619,17 @@
         }
       },
       "required": [
-        "name"
+        "id",
+        "name",
+        "visible",
+        "kind",
+        "fmt",
+        "label",
+        "font",
+        "size",
+        "color",
+        "anim",
+        "pos"
       ],
       "title": "NowPlayingElement",
       "type": "object"
@@ -626,7 +640,6 @@
         "start": {
           "default": 0,
           "minimum": 0,
-          "title": "Start",
           "type": "number"
         },
         "end": {
@@ -639,26 +652,21 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "End"
+          "default": null
         },
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "visible": {
           "default": true,
-          "title": "Visible",
           "type": "boolean"
         },
         "kind": {
           "const": "overlay",
           "default": "overlay",
-          "title": "Kind",
           "type": "string"
         },
         "sub": {
@@ -667,7 +675,6 @@
             "image",
             "color"
           ],
-          "title": "Sub",
           "type": "string"
         },
         "file": {
@@ -679,8 +686,7 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "File"
+          "default": null
         },
         "mode": {
           "default": "gradient",
@@ -689,7 +695,6 @@
             "gradient",
             "vignette"
           ],
-          "title": "Mode",
           "type": "string"
         },
         "direction": {
@@ -700,13 +705,11 @@
             "left",
             "right"
           ],
-          "title": "Direction",
           "type": "string"
         },
         "color": {
           "default": "#000000",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Color",
           "type": "string"
         },
         "blend": {
@@ -719,25 +722,34 @@
             "multiply",
             "softlight"
           ],
-          "title": "Blend",
           "type": "string"
         },
         "opacity": {
           "default": 50,
           "maximum": 100,
           "minimum": 0,
-          "title": "Opacity",
           "type": "number"
         },
         "loopCrossfade": {
           "default": true,
-          "title": "Loopcrossfade",
           "type": "boolean"
         }
       },
       "required": [
+        "start",
+        "end",
+        "id",
         "name",
-        "sub"
+        "visible",
+        "kind",
+        "sub",
+        "file",
+        "mode",
+        "direction",
+        "color",
+        "blend",
+        "opacity",
+        "loopCrossfade"
       ],
       "title": "OverlayElement",
       "type": "object"
@@ -749,17 +761,19 @@
           "default": 0.5,
           "maximum": 1,
           "minimum": 0,
-          "title": "X",
           "type": "number"
         },
         "y": {
           "default": 0.5,
           "maximum": 1,
           "minimum": 0,
-          "title": "Y",
           "type": "number"
         }
       },
+      "required": [
+        "x",
+        "y"
+      ],
       "title": "Pos",
       "type": "object"
     },
@@ -774,6 +788,10 @@
           "$ref": "#/$defs/Pos"
         }
       },
+      "required": [
+        "16:9",
+        "9:16"
+      ],
       "title": "PosByFormat",
       "type": "object"
     },
@@ -784,25 +802,22 @@
         "kind": {
           "const": "segment",
           "default": "segment",
-          "title": "Kind",
           "type": "string"
         },
         "parentId": {
-          "title": "Parentid",
           "type": "string"
         },
         "start": {
           "minimum": 0,
-          "title": "Start",
           "type": "number"
         },
         "end": {
           "minimum": 0,
-          "title": "End",
           "type": "number"
         }
       },
       "required": [
+        "kind",
         "parentId",
         "start",
         "end"
@@ -816,7 +831,6 @@
         "start": {
           "default": 0,
           "minimum": 0,
-          "title": "Start",
           "type": "number"
         },
         "end": {
@@ -829,30 +843,24 @@
               "type": "null"
             }
           ],
-          "default": null,
-          "title": "End"
+          "default": null
         },
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "visible": {
           "default": true,
-          "title": "Visible",
           "type": "boolean"
         },
         "kind": {
           "const": "text",
           "default": "text",
-          "title": "Kind",
           "type": "string"
         },
         "text": {
-          "title": "Text",
           "type": "string"
         },
         "font": {
@@ -865,7 +873,6 @@
             "Lora",
             "Quicksand"
           ],
-          "title": "Font",
           "type": "string"
         },
         "weight": {
@@ -877,25 +884,21 @@
             700,
             800
           ],
-          "title": "Weight",
           "type": "integer"
         },
         "size": {
           "default": 40,
           "maximum": 200,
           "minimum": 8,
-          "title": "Size",
           "type": "number"
         },
         "color": {
           "default": "#ffffff",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Color",
           "type": "string"
         },
         "shadow": {
           "default": true,
-          "title": "Shadow",
           "type": "boolean"
         },
         "anim": {
@@ -904,7 +907,6 @@
             "fade",
             "none"
           ],
-          "title": "Anim",
           "type": "string"
         },
         "pos": {
@@ -912,8 +914,20 @@
         }
       },
       "required": [
+        "start",
+        "end",
+        "id",
         "name",
-        "text"
+        "visible",
+        "kind",
+        "text",
+        "font",
+        "weight",
+        "size",
+        "color",
+        "shadow",
+        "anim",
+        "pos"
       ],
       "title": "TextElement",
       "type": "object"
@@ -930,28 +944,24 @@
               "type": "null"
             }
           ],
-          "default": "smooth-blend",
-          "title": "Presetid"
+          "default": "smooth-blend"
         },
         "fadeOut": {
           "default": 6,
           "maximum": 20,
           "minimum": 0,
-          "title": "Fadeout",
           "type": "number"
         },
         "fadeIn": {
           "default": 6,
           "maximum": 20,
           "minimum": 0,
-          "title": "Fadein",
           "type": "number"
         },
         "overlap": {
           "default": 6,
           "maximum": 20,
           "minimum": -5,
-          "title": "Overlap",
           "type": "number"
         },
         "curveOut": {
@@ -964,10 +974,18 @@
         },
         "edited": {
           "default": false,
-          "title": "Edited",
           "type": "boolean"
         }
       },
+      "required": [
+        "presetId",
+        "fadeOut",
+        "fadeIn",
+        "overlap",
+        "curveOut",
+        "curveIn",
+        "edited"
+      ],
       "title": "Transition",
       "type": "object"
     },
@@ -977,21 +995,20 @@
         "kind": {
           "const": "url",
           "default": "url",
-          "title": "Kind",
           "type": "string"
         },
         "url": {
-          "title": "Url",
           "type": "string"
         },
         "site": {
           "default": "",
-          "title": "Site",
           "type": "string"
         }
       },
       "required": [
-        "url"
+        "kind",
+        "url",
+        "site"
       ],
       "title": "UrlSource",
       "type": "object"
@@ -1005,7 +1022,6 @@
             "16:9",
             "9:16"
           ],
-          "title": "Format",
           "type": "string"
         },
         "background": {
@@ -1047,10 +1063,16 @@
               }
             ]
           },
-          "title": "Elements",
           "type": "array"
         }
       },
+      "required": [
+        "format",
+        "background",
+        "artwork",
+        "effects",
+        "elements"
+      ],
       "title": "Video",
       "type": "object"
     },
@@ -1058,22 +1080,18 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "visible": {
           "default": true,
-          "title": "Visible",
           "type": "boolean"
         },
         "kind": {
           "const": "visualizer",
           "default": "visualizer",
-          "title": "Kind",
           "type": "string"
         },
         "type": {
@@ -1083,7 +1101,6 @@
             "wave",
             "circular"
           ],
-          "title": "Type",
           "type": "string"
         },
         "style": {
@@ -1093,40 +1110,34 @@
             1,
             2
           ],
-          "title": "Style",
           "type": "integer"
         },
         "color1": {
           "default": "#ffffff",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Color1",
           "type": "string"
         },
         "color2": {
           "default": "#22d3ee",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "title": "Color2",
           "type": "string"
         },
         "size": {
           "default": 26,
           "maximum": 60,
           "minimum": 10,
-          "title": "Size",
           "type": "number"
         },
         "sensitivity": {
           "default": 100,
           "maximum": 200,
           "minimum": 20,
-          "title": "Sensitivity",
           "type": "number"
         },
         "opacity": {
           "default": 85,
           "maximum": 100,
           "minimum": 0,
-          "title": "Opacity",
           "type": "number"
         },
         "pos": {
@@ -1134,7 +1145,18 @@
         }
       },
       "required": [
-        "name"
+        "id",
+        "name",
+        "visible",
+        "kind",
+        "type",
+        "style",
+        "color1",
+        "color2",
+        "size",
+        "sensitivity",
+        "opacity",
+        "pos"
       ],
       "title": "VisualizerElement",
       "type": "object"
@@ -1143,20 +1165,16 @@
       "additionalProperties": false,
       "properties": {
         "id": {
-          "title": "Id",
           "type": "string"
         },
         "name": {
-          "title": "Name",
           "type": "string"
         },
         "path": {
-          "title": "Path",
           "type": "string"
         },
         "updatedAt": {
           "format": "date-time",
-          "title": "Updatedat",
           "type": "string"
         }
       },
@@ -1175,32 +1193,26 @@
     "schemaVersion": {
       "const": 1,
       "default": 1,
-      "title": "Schemaversion",
       "type": "integer"
     },
     "id": {
-      "title": "Id",
       "type": "string"
     },
     "name": {
-      "title": "Name",
       "type": "string"
     },
     "createdAt": {
       "format": "date-time",
-      "title": "Createdat",
       "type": "string"
     },
     "updatedAt": {
       "format": "date-time",
-      "title": "Updatedat",
       "type": "string"
     },
     "library": {
       "items": {
         "$ref": "#/$defs/LibraryItem"
       },
-      "title": "Library",
       "type": "array"
     },
     "mix": {
@@ -1214,7 +1226,15 @@
     }
   },
   "required": [
-    "name"
+    "schemaVersion",
+    "id",
+    "name",
+    "createdAt",
+    "updatedAt",
+    "library",
+    "mix",
+    "video",
+    "export"
   ],
   "title": "Project",
   "type": "object"
