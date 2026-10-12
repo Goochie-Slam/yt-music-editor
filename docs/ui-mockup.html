@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YT Music Editor Mockup</title>
+<style>
+:root{
+  --bg:#0f1115;--panel:#171a21;--panel-2:#1f232c;--panel-3:#262b36;--border:#2a2f3a;
+  --text:#e7e9ee;--muted:#8b93a5;--accent:#7c5cff;--accent-soft:#7c5cff33;--accent-2:#22d3ee;
+  --ok:#34d399;--warn:#fbbf24;--err:#f87171;--radius:8px;
+  font-family:Inter,"Segoe UI",system-ui,-apple-system,sans-serif;color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-size:13px}
+button,input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.app{display:grid;grid-template-rows:52px 1fr auto;height:100vh;min-width:1100px}
+/* top bar */
+.top{display:flex;align-items:center;gap:16px;padding:0 16px;background:var(--panel);border-bottom:1px solid var(--border)}
+.logo{font-weight:700;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.logo i{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:inline-block}
+.proj{display:flex;align-items:center;gap:8px;padding-left:16px;border-left:1px solid var(--border)}
+.proj b{font-weight:600}
+.saved{color:var(--ok);font-size:12px}
+.steps{display:flex;gap:4px;margin:0 auto}
+.step{background:none;border:1px solid transparent;border-radius:999px;padding:7px 14px;color:var(--muted);cursor:pointer;display:flex;gap:8px;align-items:center}
+.step span{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--panel-3);font-size:11px;font-weight:600}
+.step:hover{color:var(--text)}
+.step.on{color:var(--text);background:var(--panel-2);border-color:var(--border)}
+.step.on span{background:var(--accent);color:#fff}
+.tools{display:flex;gap:6px;align-items:center}
+.ibtn{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);height:32px;min-width:32px;padding:0 9px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.ibtn:hover{border-color:#3a4150}
+.queue-ind{color:var(--warn)}
+/* generic */
+.btn{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:#3d4453}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.sm{padding:5px 10px;font-size:12px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+input[type=text],input[type=number],select,textarea{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:7px 9px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+input[type=range]{accent-color:var(--accent);width:100%}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent)}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px}
+.ph{padding:12px 14px;border-bottom:1px solid var(--border);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;display:flex;align-items:center;justify-content:space-between}
+.pb{padding:14px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field>label{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;align-items:center}
+.seg{display:inline-flex;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:2px}
+.seg button{background:none;border:0;padding:5px 12px;border-radius:6px;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--panel-3);color:var(--text)}
+.badge{font-size:10px;padding:2px 6px;border-radius:4px;background:var(--panel-3);color:var(--muted);font-weight:600}
+.badge.p2{background:#fbbf2422;color:var(--warn)}
+.badge.p3{background:#f8717122;color:var(--err)}
+.tab{display:none;height:100%;overflow:hidden}
+.tab.on{display:block}
+main{overflow:hidden}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:var(--panel-3);border:1px solid var(--border);padding:10px 16px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:520px}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.toast.warn{border-color:var(--warn)}
+.note{font-size:12px;color:var(--muted);background:var(--panel-2);border:1px dashed var(--border);border-radius:var(--radius);padding:8px 10px}
+/* library */
+.lib{display:grid;grid-template-columns:1fr 300px;gap:14px;padding:14px;height:100%}
+.lib-main{display:flex;flex-direction:column;min-height:0}
+.drop{border:1.5px dashed #3a4150;border-radius:10px;padding:18px;display:grid;gap:10px;text-align:center;background:#171a2188}
+.drop .row{justify-content:center}
+.drop textarea{width:min(560px,100%);height:56px;resize:none}
+.tbl-wrap{overflow:auto;flex:1;margin-top:12px}
+table{width:100%;border-collapse:collapse}
+th{position:sticky;top:0;background:var(--panel);text-align:left;font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+th,td{padding:9px 10px;border-bottom:1px solid var(--border)}
+tr:hover td{background:#ffffff05}
+.src{display:inline-flex;gap:6px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.st-ok{color:var(--ok)}.st-warn{color:var(--warn)}.st-err{color:var(--err)}.st-run{color:var(--accent-2)}
+.mini-prog{width:70px;height:4px;background:var(--panel-3);border-radius:2px;display:inline-block;vertical-align:middle;overflow:hidden}
+.mini-prog i{display:block;height:100%;background:var(--accent-2)}
+.tl-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0;margin-top:12px}
+.tl-grid textarea{width:100%;height:100%;min-height:260px;resize:none;font-family:ui-monospace,Consolas,monospace;font-size:12px;line-height:1.7}
+/* modal */
+.modal-bg{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:40}
+.modal-bg.on{display:grid}
+.modal{width:520px;max-height:80vh;display:flex;flex-direction:column}
+.modal .list{overflow:auto;max-height:46vh}
+.modal label.item{display:flex;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);align-items:center;cursor:pointer}
+/* mix */
+.mix{display:grid;grid-template-columns:1fr 340px;grid-template-rows:auto 1fr;height:100%}
+.mix-head{grid-column:1/3;padding:12px 14px;border-bottom:1px solid var(--border);display:grid;gap:10px;background:var(--panel)}
+.mix-head .row{gap:18px;flex-wrap:wrap}
+.overview{position:relative;height:26px;background:var(--panel-2);border-radius:6px;overflow:hidden;cursor:pointer}
+.ov-b{position:absolute;top:3px;bottom:3px;background:#3b3f6b;border-radius:3px;border-right:1px solid var(--bg)}
+.ov-b:nth-child(odd){background:#4a4486}
+.ov-t{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(90deg,var(--accent-2) 0 2px,transparent 2px 4px);opacity:.75}
+.ov-t.gap{background:#000}
+.ov-ph{position:absolute;top:0;bottom:0;width:2px;background:#fff}
+.tracks{overflow:auto;padding:10px 14px 30px}
+.trk{display:grid;grid-template-columns:22px 34px 1fr 150px 60px 28px;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px;cursor:pointer}
+.trk:hover{border-color:#3a4150}
+.trk.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.trk.playing .tname::after{content:" ♪";color:var(--accent-2)}
+.trk.dragging{opacity:.35}
+.trk.over{border-top:2px solid var(--accent-2)}
+.handle{cursor:grab;color:var(--muted);font-size:16px;text-align:center;user-select:none}
+.tidx{color:var(--muted)}
+.tname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tname small{color:var(--muted);margin-left:6px}
+.wave{height:22px;display:flex;align-items:center;gap:1px}
+.wave i{flex:1;background:#5b6bd6;border-radius:1px;min-width:1px}
+.chip-row{display:flex;justify-content:flex-start;padding:4px 0 4px 66px;position:relative}
+.chip-row::before{content:"";position:absolute;left:44px;top:0;bottom:0;border-left:1px dashed #3a4150}
+.chip{border:1px solid #22d3ee55;background:#22d3ee12;color:var(--accent-2);border-radius:999px;padding:3px 11px;font-size:12px;cursor:pointer}
+.chip:hover{background:#22d3ee22}
+.chip.sel{background:var(--accent-2);color:#06222a;border-color:var(--accent-2);font-weight:600}
+.chip.gap{border-style:dashed}
+.chip.err{border-color:var(--err);color:var(--err);background:#f8717112}
+.chip em{opacity:.75}
+.side{border-left:1px solid var(--border);background:var(--panel);overflow:auto}
+.side .pb{padding:14px}
+svg text{font-family:inherit}
+.tsvg{width:100%;height:auto;background:var(--panel-2);border-radius:var(--radius);border:1px solid var(--border);touch-action:none;user-select:none}
+.adv{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:14px}
+.adv summary{padding:9px 10px;cursor:pointer;color:var(--muted)}
+.adv .in{padding:0 10px 10px;display:grid;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid3 input,.grid2 select{width:100%}
+.lbl{font-size:11px;color:var(--muted);margin-bottom:4px;display:block}
+/* video */
+.vid{display:grid;grid-template-columns:240px 1fr 320px;height:100%}
+.layers{border-right:1px solid var(--border);background:var(--panel);overflow:auto}
+.lg{padding:6px 0;border-bottom:1px solid var(--border)}
+.lg-h{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-weight:600}
+.lg-h:hover{background:#ffffff06}
+.lg-h.sel{background:var(--accent-soft)}
+.lg-h .eye{margin-left:auto;color:var(--muted);cursor:pointer}
+.lg-i{padding:5px 14px 5px 34px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between}
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:12px 14px}
+.pcard{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:8px;cursor:pointer;text-align:left}
+.pcard:hover{border-color:var(--accent)}
+.pcard b{display:block;font-size:12px}
+.pcard small{color:var(--muted);font-size:10.5px;line-height:1.3;display:block;margin-top:2px}
+.stage{display:flex;flex-direction:column;min-width:0;background:#0b0d10}
+.stage-bar{display:flex;gap:12px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border)}
+.canvas-wrap{flex:1;display:grid;place-items:center;padding:16px;min-height:0;position:relative}
+#cv{max-width:100%;max-height:100%;box-shadow:0 10px 40px #0008;border-radius:4px;background:#000}
+.safe{position:absolute;pointer-events:none;border:1px dashed #fbbf2488;display:none}
+.scrub{padding:8px 14px 12px;border-top:1px solid var(--border)}
+.marks{position:relative;height:10px;margin-top:2px}
+.marks i{position:absolute;top:0;width:1px;height:8px;background:#5b6378}
+.insp{border-left:1px solid var(--border);background:var(--panel);overflow:auto}
+.ipanel{display:none}.ipanel.on{display:block}
+.vstyles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+.vs{background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:6px;cursor:pointer;text-align:center;font-size:11px}
+.vs canvas{width:100%;height:42px;display:block;margin-bottom:4px}
+.vs.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.anchor{display:grid;grid-template-columns:repeat(3,26px);gap:3px}
+.anchor button{height:20px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;cursor:pointer;padding:0}
+.anchor button.on{background:var(--accent);border-color:var(--accent)}
+.fx{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;background:var(--panel-2)}
+.fx-h{display:flex;align-items:center;gap:8px;padding:8px 10px}
+.fx-h b{font-weight:500}
+.fx-h .badge{margin-left:auto}
+.fx-b{padding:0 10px 10px;display:none}
+.fx.on .fx-b{display:block}
+.fx.dis{opacity:.55}
+.fx-count{font-size:12px}
+.fx-count.warn{color:var(--warn)}
+.media{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.media div{aspect-ratio:1;border-radius:6px;border:1px solid var(--border);background-size:cover;background-position:center;position:relative}
+.media div.on{outline:2px solid var(--accent)}
+.media span{position:absolute;bottom:2px;right:4px;font-size:10px;text-shadow:0 1px 2px #000}
+/* export */
+.exp{display:grid;grid-template-columns:1fr 360px;grid-template-rows:auto 1fr;gap:14px;padding:14px;height:100%}
+.est{display:grid;gap:10px}
+.est .kv{display:flex;justify-content:space-between;border-bottom:1px solid var(--border);padding-bottom:8px}
+.est .kv b{font-size:15px}
+.qitem{display:grid;grid-template-columns:1fr 340px 160px;gap:14px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--border)}
+.bar{height:8px;background:var(--panel-3);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));transition:width .4s}
+.chapters{font-family:ui-monospace,Consolas,monospace;font-size:12px;white-space:pre;background:var(--panel-2);border:1px solid var(--border);border-radius:var(--radius);padding:10px;max-height:150px;overflow:auto}
+/* player */
+.player{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);border-top:1px solid var(--border)}
+.player .play{width:36px;height:36px;border-radius:50%;background:var(--accent);border:0;color:#fff;cursor:pointer;font-size:14px}
+.player input{flex:1}
+.player .now{min-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="logo"><i></i>YT Music Editor</div>
+    <div class="proj"><b>Chill Night Mix</b><span class="saved">✓ Đã lưu</span></div>
+    <nav class="steps" id="steps">
+      <button class="step on" data-tab="lib"><span>1</span>Thư viện</button>
+      <button class="step" data-tab="mix"><span>2</span>Mix</button>
+      <button class="step" data-tab="vid"><span>3</span>Video</button>
+      <button class="step" data-tab="exp"><span>4</span>Xuất</button>
+    </nav>
+    <div class="tools">
+      <button class="ibtn" title="Hoàn tác (Ctrl+Z)">↶</button>
+      <button class="ibtn" title="Làm lại (Ctrl+Shift+Z)">↷</button>
+      <button class="ibtn queue-ind" id="qInd" title="Hàng đợi render">⏳ <span class="num">1</span></button>
+      <button class="ibtn" title="Cài đặt">⚙</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ① LIBRARY -->
+    <section class="tab on" id="tab-lib">
+      <div class="lib">
+        <div class="lib-main">
+          <div class="row" style="margin-bottom:12px">
+            <div class="seg" id="libSeg"><button class="on" data-v="import">Thêm file / link</button><button data-v="split">Cắt theo tracklist</button></div>
+            <span class="muted" style="margin-left:auto">yt-dlp 2026.09.30 · <a href="#" style="color:var(--accent-2)" onclick="toast('Đã kiểm tra: yt-dlp là bản mới nhất');return false">Kiểm tra cập nhật</a></span>
+          </div>
+          <div id="libImport" style="display:flex;flex-direction:column;flex:1;min-height:0">
+            <div class="drop">
+              <div><b>Kéo thả file hoặc folder vào đây</b> <span class="muted">· mp4 mkv mov avi webm mp3 wav flac m4a aac ogg opus wma aiff…</span></div>
+              <div class="muted">hoặc dán link — mỗi dòng 1 link (YouTube, SoundCloud, Mixcloud, playlist…)</div>
+              <div class="row"><textarea id="links" placeholder="https://www.youtube.com/playlist?list=...&#10;https://soundcloud.com/..."></textarea><button class="btn primary" id="fetchBtn">Lấy</button></div>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th style="width:30px"><input type="checkbox" id="chkAll" checked></th><th style="width:34px">#</th><th>Tên</th><th>Nguồn</th><th>Định dạng</th><th class="num">Dài</th><th class="num">kbps</th><th style="width:140px">Trạng thái</th></tr></thead>
+                <tbody id="libBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="libSplit" class="hide" style="flex:1;flex-direction:column;min-height:0">
+            <div class="row"><span class="muted">File nguồn:</span><select style="min-width:320px"><option>Late Night Jazz Session (Mixcloud) · 2:03:40</option><option>DJ Set Live 2025.mkv · 1:31:12</option></select></div>
+            <div class="tl-grid">
+              <div style="display:flex;flex-direction:column"><span class="lbl">Dán tracklist (mm:ss hoặc hh:mm:ss + tên)</span><textarea id="tlText"></textarea></div>
+              <div class="panel" style="display:flex;flex-direction:column;min-height:0">
+                <div class="ph"><span>Preview đoạn cắt</span><span id="tlCount"></span></div>
+                <div style="overflow:auto;flex:1"><table><thead><tr><th>#</th><th>Tên</th><th class="num">Bắt đầu</th><th class="num">Kết thúc</th><th class="num">Dài</th></tr></thead><tbody id="tlBody"></tbody></table></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <aside class="panel" style="align-self:start">
+          <div class="ph">Xuất MP3</div>
+          <div class="pb">
+            <div class="field"><label>Chất lượng</label><div class="row"><b>MP3 · 320 kbps CBR</b><span class="badge">cố định</span></div></div>
+            <div class="field"><label>Folder xuất</label><div class="row"><input type="text" value="D:\Music\Export" style="flex:1"><button class="btn sm">…</button></div></div>
+            <div class="field"><label>Mẫu tên file</label><input type="text" value="{index} - {title}"><span class="muted" style="font-size:11px">Ví dụ: 01 - Midnight Coffee.mp3 · không ghi tag</span></div>
+            <div class="note" id="libWarn" style="margin-bottom:14px">⚠ 3 bài có bitrate nguồn ≤ 160kbps. Xuất 320kbps chỉ làm file nặng hơn, <b>không</b> hay hơn.</div>
+            <div class="field"><div class="row" style="justify-content:space-between"><span class="muted">Đã chọn</span><b class="num" id="libSel"></b></div></div>
+            <button class="btn primary block" id="libExport" style="margin-bottom:8px"></button>
+            <button class="btn block" onclick="go('mix');toast('Đã thêm các bài đã chọn vào Mix')">Thêm vào Mix →</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ② MIX -->
+    <section class="tab" id="tab-mix">
+      <div class="mix">
+        <div class="mix-head">
+          <div class="row">
+            <label class="row"><input type="checkbox" checked> Normalize <select><option>-14 LUFS (YouTube)</option><option>-16 LUFS</option><option>-12 LUFS</option></select></label>
+            <label class="row"><input type="checkbox" checked> Tự cắt khoảng lặng đầu/cuối</label>
+            <label class="row">Transition mặc định <select id="defPreset"></select></label>
+            <button class="btn sm" id="applyAll">Áp dụng cho tất cả điểm nối</button>
+            <span class="muted" style="margin-left:auto">Fade đầu mix 2s · cuối mix 5s</span>
+          </div>
+          <div class="overview" id="overview" title="Click để nhảy tới bài"></div>
+        </div>
+        <div class="tracks" id="tracks"></div>
+        <aside class="side" id="mixSide"></aside>
+      </div>
+    </section>
+
+    <!-- ③ VIDEO -->
+    <section class="tab" id="tab-vid">
+      <div class="vid">
+        <aside class="layers">
+          <div class="ph">Layers</div>
+          <div class="lg"><div class="lg-h" data-l="text">T&nbsp; Chữ<span class="eye">◉</span></div><div class="lg-i"><span>Now Playing</span><span id="npState">bật</span></div><div class="lg-i"><span>Tiêu đề playlist</span><span id="ttState">bật</span></div></div>
+          <div class="lg"><div class="lg-h sel" data-l="viz">▁▃▅ Visualizer<span class="eye">◉</span></div><div class="lg-i"><span id="vizName">Circular · Radial Bars</span></div></div>
+          <div class="lg"><div class="lg-h" data-l="fx">✦ Effect <span class="fx-count num" id="fxCount"></span><span class="eye">◉</span></div><div id="fxList"></div></div>
+          <div class="lg"><div class="lg-h" data-l="bg">▣ Nền<span class="eye">◉</span></div><div class="lg-i"><span id="bgName">Ảnh · Blur fill</span></div></div>
+          <div class="ph" style="border-top:1px solid var(--border)">Preset style</div>
+          <div class="presets" id="presets"></div>
+        </aside>
+        <div class="stage">
+          <div class="stage-bar">
+            <div class="seg" id="fmtSeg"><button class="on" data-v="16:9">16:9</button><button data-v="9:16">9:16</button></div>
+            <label class="row muted"><input type="checkbox" id="safeChk"> Safe area</label>
+            <span class="muted" style="margin-left:auto">Preview · chất lượng thấp hơn bản render</span>
+            <button class="btn sm" onclick="go('exp')">Render thử 30s</button>
+          </div>
+          <div class="canvas-wrap" id="cvWrap"><canvas id="cv" width="960" height="540"></canvas><div class="safe" id="safe"></div></div>
+          <div class="scrub"><div class="marks" id="marks"></div></div>
+        </div>
+        <aside class="insp">
+          <!-- viz -->
+          <div class="ipanel on" id="ip-viz">
+            <div class="ph">Visualizer <label class="row" style="text-transform:none;letter-spacing:0"><input type="checkbox" id="vizOn" checked> bật</label></div>
+            <div class="pb">
+              <div class="seg" id="vizType" style="width:100%"><button data-v="bars" style="flex:1">Bars</button><button data-v="wave" style="flex:1">Waveform</button><button class="on" data-v="circ" style="flex:1">Circular</button></div>
+              <div class="vstyles" id="vizStyles"></div>
+              <div class="field" style="margin-top:14px"><label>Màu</label><div class="row"><input type="color" id="vizColor" value="#ffffff"><input type="color" id="vizColor2" value="#22d3ee"><span class="muted">gradient</span></div></div>
+              <div class="field"><label>Kích thước <span class="num" id="vizSizeV"></span></label><input type="range" id="vizSize" min="10" max="60" value="26"></div>
+              <div class="field"><label>Độ nhạy</label><input type="range" id="vizSens" min="20" max="200" value="100"></div>
+              <div class="field"><label>Opacity</label><input type="range" id="vizOp" min="10" max="100" value="85"></div>
+              <div class="field"><label>Vị trí (9 điểm neo · hoặc kéo trên canvas)</label><div class="anchor" id="vizAnchor"></div></div>
+              <div class="note" id="vizWarn">Guideline: giữ visualizer nhỏ, tránh đè lên tiêu đề và chủ thể chính.</div>
+            </div>
+          </div>
+          <!-- fx -->
+          <div class="ipanel" id="ip-fx">
+            <div class="ph">Effect <span class="fx-count num" id="fxCount2"></span></div>
+            <div class="pb" id="fxPanel"></div>
+          </div>
+          <!-- bg -->
+          <div class="ipanel" id="ip-bg">
+            <div class="ph">Nền</div>
+            <div class="pb">
+              <div class="field"><label>Loại nền</label><div class="seg" id="bgType"><button class="on" data-v="image">Ảnh</button><button data-v="carousel">Carousel</button><button data-v="video">Video loop</button></div></div>
+              <div class="field"><label>Media <span class="muted">(ảnh demo: chọn tỉ lệ nguồn)</span></label>
+                <div class="seg" id="srcAspect"><button data-v="16:9">Ngang 16:9</button><button class="on" data-v="9:16">Dọc 9:16</button><button data-v="1:1">Vuông 1:1</button></div>
+                <div class="media" id="media"></div>
+              </div>
+              <div class="field hide" id="carOpt"><label>Đổi ảnh</label><select><option>Theo bài (đổi ảnh khi đổi bài)</option><option>Mỗi 60 giây</option><option>Mỗi 120 giây</option></select><label class="lbl" style="margin-top:6px">Chuyển ảnh: crossfade 2s</label></div>
+              <div class="field hide" id="vidOpt"><label class="row"><input type="checkbox" checked> Crossfade 1s tại điểm loop (giấu chỗ nối)</label></div>
+              <div class="field"><label>Khi nguồn khác tỉ lệ khung hình</label><div class="seg" id="fitSeg"><button class="on" data-v="blur">Blur fill</button><button data-v="solid">Solid color</button><button data-v="crop">Crop fill</button></div></div>
+              <div id="blurOpt"><div class="field"><label>Độ blur</label><input type="range" id="blurAmt" min="0" max="60" value="30"></div><div class="field"><label>Làm tối nền blur</label><input type="range" id="dimAmt" min="0" max="80" value="35"></div></div>
+              <div class="field hide" id="solidOpt"><label>Màu nền</label><input type="color" id="solidColor" value="#14121c"></div>
+            </div>
+          </div>
+          <!-- text -->
+          <div class="ipanel" id="ip-text">
+            <div class="ph">Chữ</div>
+            <div class="pb">
+              <div class="field"><label class="row"><input type="checkbox" id="npOn" checked> <b>Now Playing</b> — tự đổi theo bài</label>
+                <select id="npFmt"><option value="t">{title}</option><option value="it" selected>{index}. {title}</option><option value="np">Now Playing — {title}</option></select>
+                <div class="grid2"><select><option>Animation: Fade</option><option>Slide lên</option><option>Không</option></select><select id="npFont"><option>Be Vietnam Pro</option><option>Inter</option><option>Playfair Display</option><option>Montserrat</option><option>Lora</option><option>Quicksand</option></select></div>
+              </div>
+              <div class="field"><label class="row"><input type="checkbox" id="ttOn" checked> <b>Tiêu đề playlist</b></label><input type="text" id="ttText" value="Chill Night Mix · Tuyển tập nhẹ nhàng"></div>
+              <div class="field"><label>Cỡ chữ</label><input type="range" id="txtSize" min="14" max="48" value="26"></div>
+              <div class="field"><label>Màu · bóng đổ</label><div class="row"><input type="color" id="txtColor" value="#ffffff"><label class="row"><input type="checkbox" checked> Shadow</label><label class="row"><input type="checkbox"> Outline</label></div></div>
+              <div class="field"><label class="row"><input type="checkbox"> Logo / watermark (PNG)</label></div>
+              <div class="field"><label class="row"><input type="checkbox" disabled> Progress bar bài hiện tại <span class="badge p2">P2</span></label></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ④ EXPORT -->
+    <section class="tab" id="tab-exp">
+      <div class="exp">
+        <div class="panel">
+          <div class="ph">Cài đặt output</div>
+          <div class="pb" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 24px">
+            <div class="field"><label>Khung hình</label><div class="row"><label class="row"><input type="checkbox" class="ex" id="ex169" checked> 16:9 · 1920×1080</label><label class="row"><input type="checkbox" class="ex" id="ex916"> 9:16 · 1080×1920</label></div></div>
+            <div class="field"><label>FPS</label><div class="seg" id="fpsSeg"><button class="on" data-v="30">30</button><button data-v="60">60</button></div></div>
+            <div class="field"><label>Chất lượng</label><div class="seg" id="qSeg"><button data-v="4">Nhẹ</button><button class="on" data-v="6">Cân bằng</button><button data-v="10">Cao</button></div></div>
+            <div class="field"><label>Encoder</label><select id="enc"><option value="2.3">Tự động — NVIDIA NVENC (đã phát hiện)</option><option value="0.7">CPU — x264 (chậm)</option></select></div>
+            <div class="field"><label>Folder xuất</label><div class="row"><input type="text" value="D:\Videos\Export" style="flex:1"><button class="btn sm">…</button></div></div>
+            <div class="field"><label>File đi kèm</label><div class="row" style="flex-wrap:wrap"><label class="row"><input type="checkbox" checked disabled> video.mp4</label><label class="row"><input type="checkbox" checked> mix.mp3</label><label class="row"><input type="checkbox" id="chapChk"> chapters.txt</label></div></div>
+            <div style="grid-column:1/3" id="chapWrap" class="hide"><span class="lbl">Preview chapters (dán vào mô tả YouTube) <a href="#" style="color:var(--accent-2)" onclick="toast('Đã copy chapters');return false">Copy</a></span><div class="chapters num" id="chapters"></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph">Ước tính</div>
+          <div class="pb est">
+            <div class="kv"><span class="muted">Thời lượng</span><b class="num" id="eDur"></b></div>
+            <div class="kv"><span class="muted">Dung lượng</span><b class="num" id="eSize"></b></div>
+            <div class="kv"><span class="muted">Thời gian render *</span><b class="num" id="eTime"></b></div>
+            <div class="kv"><span class="muted">Ổ D: còn trống</span><b class="num st-ok">214 GB ✓</b></div>
+            <span class="muted" style="font-size:11px">* Tính từ lần render thử gần nhất (2.3× realtime). Grain / mưa / bụi làm file nặng và render chậm hơn.</span>
+            <div class="row"><button class="btn" style="flex:1" onclick="toast('Đang render thử 30s tại 01:12:00…')">Render thử 30s</button><input type="text" value="01:12:00" class="num" style="width:90px"></div>
+            <button class="btn primary block" id="startRender" style="padding:12px">▶ Bắt đầu render</button>
+          </div>
+        </div>
+        <div class="panel" style="grid-column:1/3;overflow:auto">
+          <div class="ph">Hàng đợi render</div>
+          <div id="queue"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="player" id="player">
+    <button class="play" id="playBtn">▶</button>
+    <span class="num" id="pTime">00:00:00</span>
+    <input type="range" id="pScrub" min="0" max="1000" value="0" step="1">
+    <span class="num muted" id="pTotal"></span>
+    <span class="now" id="pNow"></span>
+  </footer>
+</div>
+
+<div class="modal-bg" id="plModal"><div class="panel modal">
+  <div class="ph"><span>Playlist: Chill Lofi Collection · 8 bài</span><a href="#" style="color:var(--accent-2);text-transform:none;letter-spacing:0" id="plAll">Bỏ chọn tất cả</a></div>
+  <div class="list" id="plList"></div>
+  <div class="pb row" style="justify-content:flex-end"><button class="btn" onclick="closeModal()">Hủy</button><button class="btn primary" id="plAdd">Thêm 8 bài</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const fmt=(s,h=true)=>{s=Math.max(0,Math.round(s));const H=Math.floor(s/3600),M=Math.floor(s%3600/60),S=s%60;const p=n=>String(n).padStart(2,'0');return (h||H)?`${p(H)}:${p(M)}:${p(S)}`:`${M}:${p(S)}`};
+const fmtMS=s=>fmt(s,false);
+let toastT;function toast(msg,kind){const t=$('#toast');t.textContent=msg;t.className='toast show '+(kind||'');clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',2600)}
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646}}
+
+/* ---------- tabs ---------- */
+let curTab='lib';
+function go(t){curTab=t;$$('.step').forEach(b=>b.classList.toggle('on',b.dataset.tab===t));$$('.tab').forEach(s=>s.classList.toggle('on',s.id==='tab-'+t));$('#player').classList.toggle('hide',!(t==='mix'||t==='vid'));if(t==='vid')fitCanvas();if(t==='exp')renderExport()}
+$$('.step').forEach(b=>b.onclick=()=>go(b.dataset.tab));
+function segInit(id,cb){const el=$(id);el.querySelectorAll('button').forEach(b=>b.onclick=()=>{el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cb&&cb(b.dataset.v)})}
+
+/* ---------- data ---------- */
+const A=['Midnight','Rainy','Velvet','Golden','Quiet','Paper','Neon','Lazy','Silver','Ocean','Autumn','Sleepy','Coffee','Cloud','Moonlit','Warm','Blue','Late','Soft','Faded'];
+const N=['Coffee','Window','Sky','Hour','Streets','Hearts','Lights','Sunday','Rain','Breeze','Letters','Drive','Dreams','Room','Echo','Waves','Café','Train','Garden','Memories'];
+const r=rng(7);
+const tracks=Array.from({length:40},(_,i)=>({id:i+1,title:`${A[(i*7)%20]} ${N[(i*11+3)%20]}`,dur:Math.round(170+r()*120)}));
+const PRESETS=[
+  {name:'Smooth Blend',fo:6,fi:6,ov:6,co:'Equal-power',ci:'Equal-power',hint:'R&B, ballad — mặc định',builtin:1},
+  {name:'Quick Mix',fo:2.5,fi:2.5,ov:2.5,co:'Equal-power',ci:'Equal-power',hint:'EDM, remix, disco',builtin:1},
+  {name:'Long Dissolve',fo:12,fi:12,ov:12,co:'S-curve',ci:'S-curve',hint:'Lofi, sleep, ambient',builtin:1},
+  {name:'Radio Segue',fo:5,fi:1.5,ov:1.5,co:'Log',ci:'Equal-power',hint:'Pop, bài intro mạnh',builtin:1},
+  {name:'Fade & Breathe',fo:3,fi:1,ov:-1.5,co:'Log',ci:'Linear',hint:'Jazz, acoustic, đổi mood',builtin:1},
+];
+let defPreset=0;
+const trans={}; // key "a>b"
+const key=(a,b)=>a.id+'>'+b.id;
+function mkT(p){const P=PRESETS[p];return{p,fo:P.fo,fi:P.fi,ov:P.ov,co:P.co,ci:P.ci,edited:false}}
+function getT(i){const k=key(tracks[i],tracks[i+1]);if(!trans[k])trans[k]=mkT(defPreset);return trans[k]}
+// seed variety
+trans['1>2']=mkT(1);trans['2>3']=mkT(4);trans['5>6']={...mkT(2),fo:10,edited:true};trans['9>10']=mkT(3);
+
+function timeline(){const starts=[0],chap=[0];for(let i=0;i<tracks.length-1;i++){const t=getT(i);const s=starts[i]+tracks[i].dur-t.ov;starts.push(s);chap.push(t.ov>0?s+t.ov/2:s)}const total=starts.at(-1)+tracks.at(-1).dur;return{starts,chap,total}}
+function curIdx(t){const {chap}=timeline();let k=0;for(let i=0;i<chap.length;i++)if(t>=chap[i])k=i;return k}
+
+/* ---------- player ---------- */
+let pt=4364,playing=false,lastFrame=performance.now(),vclock=0; // vclock: đồng hồ hình ảnh (preview luôn chuyển động)
+function updatePlayer(){const {total}=timeline();$('#pTotal').textContent=fmt(total);$('#pTime').textContent=fmt(pt);$('#pScrub').value=Math.round(pt/total*1000);const i=curIdx(pt);$('#pNow').innerHTML=`<span class="muted">Bài ${i+1}:</span> ${tracks[i].title}`;const ph=$('#ovPh');if(ph)ph.style.left=(pt/total*100)+'%';$$('.trk').forEach(el=>el.classList.toggle('playing',+el.dataset.i===i))}
+$('#playBtn').onclick=()=>{playing=!playing;$('#playBtn').textContent=playing?'❚❚':'▶'};
+$('#pScrub').oninput=e=>{pt=e.target.value/1000*timeline().total;updatePlayer()};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName))return;if(e.code==='Space'&&(curTab==='mix'||curTab==='vid')){e.preventDefault();$('#playBtn').click()}if(/^Digit[1-4]$/.test(e.code))go(['lib','mix','vid','exp'][+e.code.slice(5)-1]);if(e.key==='p'&&curTab==='mix'&&sel.type==='t')previewT()});
+
+/* ---------- ① library ---------- */
+const libRows=[
+  {t:'Midnight Coffee',src:'YouTube',c:'#f87171',f:'webm/opus',d:222,k:160,s:'ok'},
+  {t:'Rainy Window',src:'rainy_window.flac',c:'#8b93a5',f:'flac',d:245,k:951,s:'ok'},
+  {t:'Velvet Sky',src:'SoundCloud',c:'#fb923c',f:'mp3',d:198,k:128,s:'warn'},
+  {t:'Golden Hour (Live)',src:'concert_2024.mkv',c:'#8b93a5',f:'mkv → aac',d:301,k:256,s:'ok'},
+  {t:'Quiet Streets',src:'YouTube',c:'#f87171',f:'m4a',d:189,k:129,s:'warn'},
+  {t:'Paper Hearts',src:'paper_hearts.m4a',c:'#8b93a5',f:'m4a',d:214,k:256,s:'ok'},
+  {t:'Neon Lights',src:'Mixcloud',c:'#a78bfa',f:'m4a',d:0,k:0,s:'run',p:45},
+  {t:'Private video',src:'YouTube',c:'#f87171',f:'—',d:0,k:0,s:'err',e:'Video riêng tư'},
+  {t:'Lazy Sunday',src:'lazy_sunday.wav',c:'#8b93a5',f:'wav',d:233,k:1411,s:'ok'},
+  {t:'Silver Rain',src:'YouTube',c:'#f87171',f:'webm/opus',d:207,k:152,s:'warn'},
+];
+libRows.forEach(x=>x.on=x.s!=='err');
+function stHtml(x){if(x.s==='ok')return'<span class="st-ok">✓ Sẵn sàng</span>';if(x.s==='warn')return'<span class="st-warn" title="Bitrate nguồn thấp">⚠ Bitrate thấp</span>';if(x.s==='run')return`<span class="st-run">⟳ ${x.p}% </span><span class="mini-prog"><i style="width:${x.p}%"></i></span>`;return`<span class="st-err" title="${x.e}">✕ ${x.e}</span> <a href="#" style="color:var(--accent-2)" onclick="toast('Đang thử lại…');return false">Thử lại</a>`}
+function renderLib(){$('#libBody').innerHTML=libRows.map((x,i)=>`<tr><td><input type="checkbox" data-i="${i}" ${x.on?'checked':''} ${x.s==='err'?'disabled':''}></td><td class="muted num">${i+1}</td><td>${x.t}</td><td><span class="src"><i class="dot" style="background:${x.c}"></i>${x.src}</span></td><td class="muted">${x.f}</td><td class="num">${x.d?fmtMS(x.d):'—'}</td><td class="num ${x.k&&x.k<=160?'st-warn':''}">${x.k||'—'}</td><td>${stHtml(x)}</td></tr>`).join('');
+  $$('#libBody input').forEach(c=>c.onchange=()=>{libRows[c.dataset.i].on=c.checked;libCount()});libCount()}
+function libCount(){const s=libRows.filter(x=>x.on&&x.s!=='err');const n=s.length,mb=s.reduce((a,x)=>a+(x.d||200)*40/1000,0);$('#libSel').textContent=`${n} bài · ~${Math.round(mb)} MB`;$('#libExport').textContent=`Xuất ${n} file MP3`;const w=s.filter(x=>x.k&&x.k<=160).length;$('#libWarn').style.display=w?'':'none';$('#libWarn').innerHTML=`⚠ ${w} bài có bitrate nguồn ≤ 160kbps. Xuất 320kbps chỉ làm file nặng hơn, <b>không</b> hay hơn.`}
+$('#chkAll').onchange=e=>{libRows.forEach(x=>{if(x.s!=='err')x.on=e.target.checked});renderLib()};
+$('#libExport').onclick=()=>toast('Đang xuất MP3 320kbps vào D:\\Music\\Export…');
+setInterval(()=>{libRows.forEach(x=>{if(x.s==='run'){x.p=Math.min(100,x.p+3+Math.round(Math.random()*4));if(x.p>=100){x.s='ok';x.d=236;x.k=256}}});if(curTab==='lib')renderLib()},900);
+$('#fetchBtn').onclick=()=>{const v=$('#links').value.trim();if(!v){toast('Dán ít nhất 1 link');return}if(/list=|\/sets\/|playlist/.test(v)){openModal()}else{v.split(/\n+/).forEach(l=>libRows.push({t:'Đang lấy thông tin…',src:/soundcloud/.test(l)?'SoundCloud':/mixcloud/.test(l)?'Mixcloud':'YouTube',c:'#f87171',f:'—',d:0,k:0,s:'run',p:0,on:true}));renderLib();$('#links').value=''}};
+const plSongs=['Sleepy Cloud','Warm Garden','Blue Train','Late Drive','Soft Echo','Faded Letters','Ocean Room','Autumn Café'];
+function openModal(){$('#plList').innerHTML=plSongs.map((s,i)=>`<label class="item"><input type="checkbox" checked> <span class="muted num">${i+1}</span> ${s} <span class="muted num" style="margin-left:auto">${fmtMS(180+i*13)}</span></label>`).join('');$('#plModal').classList.add('on');syncPl();$$('#plList input').forEach(c=>c.onchange=syncPl)}
+function syncPl(){const n=$$('#plList input:checked').length;$('#plAdd').textContent=`Thêm ${n} bài`;$('#plAdd').disabled=!n}
+function closeModal(){$('#plModal').classList.remove('on')}
+$('#plAll').onclick=e=>{e.preventDefault();const any=$$('#plList input:checked').length;$$('#plList input').forEach(c=>c.checked=!any);e.target.textContent=any?'Chọn tất cả':'Bỏ chọn tất cả';syncPl()};
+$('#plAdd').onclick=()=>{$$('#plList input').forEach((c,i)=>{if(c.checked)libRows.push({t:plSongs[i],src:'YouTube',c:'#f87171',f:'webm/opus',d:0,k:0,s:'run',p:Math.round(Math.random()*20),on:true})});closeModal();$('#links').value='';renderLib();toast('Đã thêm bài từ playlist — đang tải')};
+segInit('#libSeg',v=>{$('#libImport').classList.toggle('hide',v!=='import');$('#libImport').style.display=v==='import'?'flex':'';$('#libSplit').classList.toggle('hide',v!=='split');$('#libSplit').style.display=v==='split'?'flex':''});
+$('#tlText').value=`00:00 Intro — Blue Train\n04:12 Autumn Café\n09:30 Soft Echo\n15:02 Faded Letters\n21:45 Ocean Room\n28:10 Sai định dạng dòng này\n1:05:20 Late Drive\n1:12:44 Warm Garden`;
+function parseTL(){const SRC=2*3600+3*60+40;const rows=[];$('#tlText').value.split('\n').forEach(l=>{l=l.trim();if(!l)return;const m=l.match(/^((\d{1,2}):)?(\d{1,2}):(\d{2})\s+[-–—]?\s*(.+)$/);if(!m){rows.push({err:l});return}rows.push({s:(+(m[2]||0))*3600+(+m[3])*60+(+m[4]),n:m[5]})});const ok=rows.filter(x=>!x.err);ok.forEach((x,i)=>x.e=i<ok.length-1?ok[i+1].s:SRC);let k=0;$('#tlBody').innerHTML=rows.map(x=>x.err?`<tr><td></td><td colspan="4" class="st-err">✕ Không đọc được: "${x.err}"</td></tr>`:`<tr><td class="muted num">${++k}</td><td>${x.n}</td><td class="num">${fmt(x.s)}</td><td class="num">${fmt(x.e)}</td><td class="num">${fmtMS(x.e-x.s)}</td></tr>`).join('');$('#tlCount').textContent=`${ok.length} đoạn${rows.length>ok.length?' · '+(rows.length-ok.length)+' lỗi':''}`}
+$('#tlText').oninput=parseTL;
+
+/* ---------- ② mix ---------- */
+let sel={type:'t',i:0};
+function waveBars(id,n=34){const g=rng(id*97);return Array.from({length:n},(_,i)=>`<i style="height:${20+g()*70*(0.5+0.5*Math.sin(i/n*Math.PI))}%"></i>`).join('')}
+function presetOpts(selIdx,edited){return PRESETS.map((p,i)=>`<option value="${i}" ${i===selIdx?'selected':''}>${p.name}${i===selIdx&&edited?' (đã chỉnh)':''}</option>`).join('')}
+function chipLabel(t){const P=PRESETS[t.p];const d=t.ov>0?`${+t.ov.toFixed(1)}s`:t.ov===0?'nối liền':`lặng ${+(-t.ov).toFixed(1)}s`;return`${t.ov>0?'◆':'◇'} ${P.name}${t.edited?' <em>(đã chỉnh)</em>':''} · ${d}`}
+function tErr(i){const t=getT(i);const lim=Math.min(tracks[i].dur,tracks[i+1].dur)/2;return Math.max(t.fo,t.fi,t.ov)>lim}
+function renderMix(){
+  $('#defPreset').innerHTML=presetOpts(defPreset);
+  const {starts,total}=timeline();
+  let ov='';tracks.forEach((t,i)=>{ov+=`<div class="ov-b" style="left:${starts[i]/total*100}%;width:${t.dur/total*100}%" data-i="${i}"></div>`});
+  for(let i=0;i<tracks.length-1;i++){const t=getT(i);const a=t.ov>0?starts[i+1]:starts[i]+tracks[i].dur;const w=Math.max(Math.abs(t.ov),.0001);ov+=`<div class="ov-t ${t.ov<=0?'gap':''}" style="left:${a/total*100}%;width:max(2px,${w/total*100}%)"></div>`}
+  $('#overview').innerHTML=ov+'<div class="ov-ph" id="ovPh"></div>';
+  let h='';tracks.forEach((t,i)=>{h+=`<div class="trk ${sel.type==='k'&&sel.i===i?'sel':''}" draggable="true" data-i="${i}"><span class="handle" title="Kéo để đổi thứ tự">⠿</span><span class="tidx num">${String(i+1).padStart(2,'0')}</span><span class="tname">${t.title}</span><span class="wave">${waveBars(t.id)}</span><span class="num muted">${fmtMS(t.dur)}</span><span class="muted" title="Xóa" style="cursor:pointer;text-align:center" data-del="${i}">✕</span></div>`;
+    if(i<tracks.length-1){const T=getT(i);h+=`<div class="chip-row"><button class="chip ${T.ov<=0?'gap':''} ${tErr(i)?'err':''} ${sel.type==='t'&&sel.i===i?'sel':''}" data-t="${i}" title="${tErr(i)?'Transition dài hơn 50% bài ngắn hơn':'Click để chỉnh'}">${chipLabel(T)}</button></div>`}});
+  $('#tracks').innerHTML=h;
+  $$('.chip').forEach(c=>c.onclick=()=>{sel={type:'t',i:+c.dataset.t};renderMix()});
+  $$('.trk').forEach(el=>{el.onclick=e=>{if(e.target.dataset.del!==undefined){const i=+e.target.dataset.del;const [x]=tracks.splice(i,1);sel={type:'t',i:0};renderMix();toast(`Đã xóa "${x.title}" · Hoàn tác`);return}sel={type:'k',i:+el.dataset.i};renderMix()};
+    el.ondragstart=e=>{el.classList.add('dragging');e.dataTransfer.setData('text',el.dataset.i)};el.ondragend=()=>el.classList.remove('dragging');
+    el.ondragover=e=>{e.preventDefault();el.classList.add('over')};el.ondragleave=()=>el.classList.remove('over');
+    el.ondrop=e=>{e.preventDefault();const from=+e.dataTransfer.getData('text'),to=+el.dataset.i;if(from===to)return;const [x]=tracks.splice(from,1);tracks.splice(to,0,x);renderMix();toast('Đã đổi thứ tự · transition đi theo cặp bài cũ, cặp mới dùng preset mặc định')}});
+  $$('.ov-b').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;sel={type:'k',i};renderMix();$(`.trk[data-i="${i}"]`).scrollIntoView({block:'center',behavior:'smooth'})});
+  renderSide();updatePlayer();
+}
+$('#defPreset').onchange=e=>{defPreset=+e.target.value};
+$('#applyAll').onclick=()=>{for(let i=0;i<tracks.length-1;i++)trans[key(tracks[i],tracks[i+1])]=mkT(defPreset);renderMix();toast(`Đã áp dụng "${PRESETS[defPreset].name}" cho ${tracks.length-1} điểm nối · Hoàn tác`)};
+
+const CURVES=['Equal-power','Linear','Log','S-curve'];
+function gainIn(c,x){x=Math.min(1,Math.max(0,x));if(c==='Equal-power')return Math.sin(x*Math.PI/2);if(c==='Log')return 1-Math.pow(1-x,2.5);if(c==='S-curve')return .5-.5*Math.cos(Math.PI*x);return x}
+function gainOut(c,x){x=Math.min(1,Math.max(0,x));if(c==='Equal-power')return Math.cos(x*Math.PI/2);if(c==='Log')return Math.pow(1-x,2.5);if(c==='S-curve')return .5+.5*Math.cos(Math.PI*x);return 1-x}
+let pv=null; // preview anim
+function tWin(t){const a=Math.min(-t.fo,-t.ov)-2,b=Math.max(0,-t.ov+t.fi)+2;return[a,b]}
+function drawTSvg(t,i){
+  const W=312,H=190,L=10,R=W-10,[a,b]=tWin(t),X=s=>L+(s-a)/(b-a)*(R-L);
+  const g1=rng(tracks[i].id*13),g2=rng(tracks[i+1].id*13);
+  let s='';
+  // lanes
+  const lane=(y0,h,from,to,gfun,rg,col)=>{let p='';const n=70;for(let k=0;k<n;k++){const ss=a+(b-a)*k/n;if(ss<from||ss>to)continue;const amp=gfun(ss)*(0.45+rg()*0.55);const x=X(ss),hh=amp*h/2;p+=`<rect x="${x.toFixed(1)}" y="${(y0+h/2-hh).toFixed(1)}" width="2.6" height="${Math.max(.5,2*hh).toFixed(1)}" fill="${col}" rx="1"/>`}return p};
+  const gA=ss=>ss< -t.fo?1:ss>0?0:gainOut(t.co,(ss+t.fo)/Math.max(t.fo,.001));
+  const bS=-t.ov,gB=ss=>ss<bS?0:ss>bS+t.fi?1:gainIn(t.ci,(ss-bS)/Math.max(t.fi,.001));
+  s+=`<text x="${L}" y="16" fill="#8b93a5" font-size="10">${String(i+1).padStart(2,'0')} ${tracks[i].title}</text>`;
+  s+=lane(22,56,a,0,gA,g1,'#7c5cff');
+  s+=`<text x="${L}" y="104" fill="#8b93a5" font-size="10">${String(i+2).padStart(2,'0')} ${tracks[i+1].title}</text>`;
+  s+=lane(110,56,bS,b,gB,g2,'#22d3ee');
+  // envelopes
+  const env=(y0,h,gf,col)=>{let d='';for(let k=0;k<=100;k++){const ss=a+(b-a)*k/100;d+=(k?'L':'M')+X(ss).toFixed(1)+','+(y0+h-gf(ss)*h).toFixed(1)}return`<path d="${d}" fill="none" stroke="${col}" stroke-width="1.5" opacity=".9"/>`};
+  s+=env(22,56,gA,'#fff');s+=env(110,56,gB,'#fff');
+  // markers
+  const xEnd=X(0),xFo=X(-t.fo),xB=X(bS),xFi=X(bS+t.fi);
+  s+=`<line x1="${xEnd}" y1="20" x2="${xEnd}" y2="180" stroke="#ffffff33" stroke-dasharray="3 3"/>`;
+  if(t.ov>0)s+=`<rect x="${xB}" y="20" width="${xEnd-xB}" height="160" fill="#22d3ee14"/>`;
+  else if(t.ov<0)s+=`<rect x="${xEnd}" y="20" width="${xB-xEnd}" height="160" fill="#00000055"/><text x="${(xEnd+xB)/2}" y="96" fill="#8b93a5" font-size="10" text-anchor="middle">lặng</text>`;
+  const hd=(x,y,k,lab)=>`<g class="hdl" data-k="${k}" style="cursor:ew-resize"><rect x="${x-7}" y="${y-9}" width="14" height="18" rx="4" fill="#e7e9ee"/><text x="${x}" y="${y+3.5}" font-size="9" text-anchor="middle" fill="#0f1115" font-weight="700">${lab}</text></g>`;
+  s+=hd(xFo,50,'fo','◂')+hd(xFi,138,'fi','▸')+hd(xB,138,'ov','⇔');
+  s+=`<line id="pvLine" x1="-10" y1="18" x2="-10" y2="182" stroke="#fbbf24" stroke-width="2"/>`;
+  return`<svg class="tsvg" id="tsvg" viewBox="0 0 ${W} ${H}" data-a="${a}" data-b="${b}">${s}</svg>`;
+}
+function renderSide(){
+  const side=$('#mixSide');
+  if(sel.type==='k'){const t=tracks[sel.i];if(!t){sel={type:'t',i:0};return renderSide()}side.innerHTML=`<div class="ph">Bài ${sel.i+1}</div><div class="pb">
+    <div class="field"><label>Tên hiển thị (không ghi vào tag)</label><input type="text" value="${t.title}" id="trName"></div>
+    <div class="field"><label>Trim in / out — kéo handle trên waveform</label><div class="wave" style="height:60px;position:relative;background:var(--panel-2);border-radius:6px;padding:0 4px">${waveBars(t.id,60)}<span style="position:absolute;left:4%;top:0;bottom:0;border-left:2px solid var(--warn)"></span><span style="position:absolute;right:6%;top:0;bottom:0;border-left:2px solid var(--warn)"></span></div><div class="row muted num" style="justify-content:space-between"><span>In 0:02.4 (auto)</span><span>Out ${fmtMS(t.dur)}.0</span></div></div>
+    <div class="grid2" style="margin-bottom:14px"><div><span class="lbl">Loudness gốc</span><b class="num">-9.8 LUFS</b></div><div><span class="lbl">Sau normalize</span><b class="num st-ok">-14.0 LUFS</b></div></div>
+    <div class="field"><label>Gain thêm <span class="badge p2">P2</span></label><input type="range" min="-6" max="6" value="0" disabled></div>
+    <button class="btn block" onclick="toast('Nghe thử điểm cắt…')">▶ Nghe thử điểm trim</button></div>`;
+    $('#trName').oninput=e=>{t.title=e.target.value;$(`.trk[data-i="${sel.i}"] .tname`).textContent=t.title};return}
+  const i=Math.min(sel.i,tracks.length-2);const t=getT(i);const P=PRESETS[t.p];
+  side.innerHTML=`<div class="ph"><span>Transition ${String(i+1).padStart(2,'0')} → ${String(i+2).padStart(2,'0')}</span><span class="badge">${t.ov>0?'Crossfade':'Fade → Fade'}</span></div><div class="pb">
+    <div class="field"><label>Preset</label><select id="tPreset">${presetOpts(t.p,t.edited)}</select><span class="muted" style="font-size:11px">${P.hint}</span></div>
+    <div id="svgHost">${drawTSvg(t,i)}</div>
+    <span class="muted" style="font-size:11px;display:block;margin:6px 0 12px">Kéo ◂ fade-out · ▸ fade-in · ⇔ dịch bài sau (trái = chồng, phải = lặng)</span>
+    <div class="grid3" style="margin-bottom:12px">
+      <div><span class="lbl">Fade out (s)</span><input type="number" step="0.5" min="0" max="20" id="tFo" value="${t.fo}"></div>
+      <div><span class="lbl">Fade in (s)</span><input type="number" step="0.5" min="0" max="20" id="tFi" value="${t.fi}"></div>
+      <div><span class="lbl">${t.ov>=0?'Chồng (s)':'Chồng (s) · âm = lặng'}</span><input type="number" step="0.5" min="-5" max="20" id="tOv" value="${t.ov}"></div>
+    </div>
+    ${tErr(i)?'<div class="note" style="border-color:var(--err);color:var(--err);margin-bottom:12px">✕ Transition dài hơn 50% của bài ngắn hơn</div>':''}
+    <details class="adv"><summary>Nâng cao — đường cong fade</summary><div class="in">
+      <div class="grid2"><div><span class="lbl">Curve out</span><select id="tCo">${CURVES.map(c=>`<option ${c===t.co?'selected':''}>${c}</option>`).join('')}</select></div><div><span class="lbl">Curve in</span><select id="tCi">${CURVES.map(c=>`<option ${c===t.ci?'selected':''}>${c}</option>`).join('')}</select></div></div>
+      <span class="muted" style="font-size:11px">Equal-power giữ âm lượng đều khi 2 bài chồng nhau. Linear tạo "hố" ~-3dB ở giữa.</span></div></details>
+    <button class="btn primary block" id="pvBtn" style="margin-bottom:8px">▶ Nghe thử (P)</button>
+    <div class="grid2"><button class="btn" id="saveP">Lưu thành preset</button><button class="btn" id="applyThis">Áp dụng tất cả</button></div>
+  </div>`;
+  $('#tPreset').onchange=e=>{trans[key(tracks[i],tracks[i+1])]=mkT(+e.target.value);renderMix()};
+  const upd=(f,v)=>{t[f]=v;t.edited=true;renderMix()};
+  $('#tFo').onchange=e=>upd('fo',Math.max(0,+e.target.value));$('#tFi').onchange=e=>upd('fi',Math.max(0,+e.target.value));$('#tOv').onchange=e=>upd('ov',+e.target.value);
+  $('#tCo').onchange=e=>upd('co',e.target.value);$('#tCi').onchange=e=>upd('ci',e.target.value);
+  $('#pvBtn').onclick=previewT;
+  $('#saveP').onclick=()=>{const n=prompt('Tên preset mới:','My Chill');if(!n)return;PRESETS.push({name:n,fo:t.fo,fi:t.fi,ov:t.ov,co:t.co,ci:t.ci,hint:'Preset của bạn'});t.p=PRESETS.length-1;t.edited=false;renderMix();toast(`Đã lưu preset "${n}"`)};
+  $('#applyThis').onclick=()=>{for(let j=0;j<tracks.length-1;j++)trans[key(tracks[j],tracks[j+1])]={...t};renderMix();toast('Đã áp dụng transition này cho tất cả điểm nối · Hoàn tác')};
+  bindHandles(t);
+}
+function bindHandles(t){const svg=$('#tsvg');if(!svg)return;let drag=null;
+  svg.querySelectorAll('.hdl').forEach(h=>h.onpointerdown=e=>{drag={k:h.dataset.k,x:e.clientX,v:{...t},a:+svg.dataset.a,b:+svg.dataset.b};svg.setPointerCapture(e.pointerId)});
+  svg.onpointermove=e=>{if(!drag)return;const r=svg.getBoundingClientRect();const sp=(drag.b-drag.a)/(r.width*(292/312));const ds=Math.round((e.clientX-drag.x)*sp*2)/2;
+    if(drag.k==='fo')t.fo=Math.min(20,Math.max(0,drag.v.fo-ds));if(drag.k==='fi')t.fi=Math.min(20,Math.max(0,drag.v.fi+ds));if(drag.k==='ov')t.ov=Math.min(20,Math.max(-5,drag.v.ov-ds));
+    t.edited=true;const i=Math.min(sel.i,tracks.length-2);$('#svgHost').innerHTML=drawTSvg(t,i);$('#tFo').value=t.fo;$('#tFi').value=t.fi;$('#tOv').value=t.ov;bindHandles(t);
+    const s2=$('#tsvg');s2.onpointerup=()=>{drag=null;renderMix()};s2.setPointerCapture(e.pointerId);s2.onpointermove=svg.onpointermove;s2.querySelectorAll('.hdl').forEach(h=>h.onpointerdown=null)};
+  svg.onpointerup=()=>{if(drag){drag=null;renderMix()}}}
+function previewT(){if(sel.type!=='t')return;cancelAnimationFrame(pv);const t=getT(Math.min(sel.i,tracks.length-2));const [a,b]=tWin(t);const len=b-a,st=performance.now();const btn=$('#pvBtn');btn.textContent='■ Dừng';btn.onclick=()=>{cancelAnimationFrame(pv);renderSide()};
+  const step=now=>{const k=(now-st)/1000/len;const ln=$('#pvLine');if(!ln||k>1){renderSide();return}const x=10+k*292;ln.setAttribute('x1',x);ln.setAttribute('x2',x);pv=requestAnimationFrame(step)};pv=requestAnimationFrame(step)}
+
+/* ---------- ③ video ---------- */
+const cv=$('#cv'),ctx=cv.getContext('2d');
+const V={fmt:'16:9',srcAspect:'9:16',fit:'blur',blur:30,dim:35,solid:'#14121c',bgType:'image',
+  vizOn:true,vizType:'circ',vizStyle:0,vizColor:'#ffffff',vizColor2:'#22d3ee',vizSize:26,vizSens:100,vizOp:85,anchor:5,
+  npOn:true,npFmt:'it',ttOn:true,ttText:'Chill Night Mix · Tuyển tập nhẹ nhàng',txtSize:26,txtColor:'#ffffff',font:'Be Vietnam Pro',
+  fx:{zoom:{on:true,v:60},grain:{on:true,v:18},glow:{on:false,v:40},dust:{on:true,v:40},snow:{on:false,v:40},bokeh:{on:false,v:20}}};
+const FX=[
+  {k:'zoom',n:'Slow Zoom / Ken Burns',p:'Chu kỳ (s)',min:20,max:120,pr:'P1'},
+  {k:'grain',n:'Film Grain',p:'Opacity %',min:0,max:40,pr:'P1'},
+  {k:'glow',n:'Glow / Bloom',p:'Độ mạnh',min:0,max:100,pr:'P1'},
+  {k:'dust',n:'Floating Dust',p:'Mật độ',min:5,max:100,pr:'P1'},
+  {k:'snow',n:'Snowfall',p:'Mật độ',min:5,max:100,pr:'P1'},
+  {k:'bokeh',n:'Bokeh / Light Leak',p:'Opacity %',min:5,max:30,pr:'P1'},
+  {k:'vhs',n:'VHS / Chromatic',pr:'P2'},{k:'fog',n:'Fog / Smoke',pr:'P2'},{k:'rain',n:'Rain',pr:'P2'},{k:'overlay',n:'Custom Overlay (video)',pr:'P2'},{k:'parallax',n:'Parallax 2.5D',pr:'P3'}];
+const STYLE_PRESETS=[
+  {id:'A',n:'Late-Night R&B',d:'Zoom · Grain · Bokeh nhẹ',fx:{zoom:70,grain:18,bokeh:10},viz:['bars',0]},
+  {id:'B',n:'Bossa Nova Café',d:'Zoom · Dust · Glow',fx:{zoom:60,dust:40,glow:35},viz:['circ',0]},
+  {id:'C',n:'Party Remix',d:'Spectrum · Glow · (VHS P2)',fx:{glow:55},viz:['bars',1]},
+  {id:'D',n:'Christmas',d:'Glow · Bokeh · Snow · Zoom',fx:{glow:45,bokeh:20,snow:45,zoom:80},viz:['circ',2]},
+  {id:'E',n:'Lofi / Sad',d:'(Rain P2) · Grain · Zoom',fx:{grain:22,zoom:90},viz:['wave',0]},
+  {id:'F',n:'Synthwave',d:'(VHS P2) · Spectrum',fx:{glow:50},viz:['wave',2]}];
+const VIZ_NAMES={bars:['Classic','Mirrored','Capsule'],wave:['Line','Filled','Neon Layers'],circ:['Radial Bars','Ring Wave','Dot Ring']};
+
+// source image (procedural "artwork")
+const src=document.createElement('canvas');
+function makeSrc(){const [w,h]=V.srcAspect==='16:9'?[960,540]:V.srcAspect==='9:16'?[540,960]:[720,720];src.width=w;src.height=h;const c=src.getContext('2d');
+  const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#1b1740');g.addColorStop(.55,'#6b3a7a');g.addColorStop(.8,'#e0806a');g.addColorStop(1,'#2a1630');c.fillStyle=g;c.fillRect(0,0,w,h);
+  c.fillStyle='#ffe6b0';c.shadowColor='#ffd59a';c.shadowBlur=60;c.beginPath();c.arc(w*.62,h*.5,Math.min(w,h)*.11,0,7);c.fill();c.shadowBlur=0;
+  const R=rng(3);c.fillStyle='#fff';for(let i=0;i<120;i++){c.globalAlpha=R()*.8;c.fillRect(R()*w,R()*h*.45,1.5,1.5)}c.globalAlpha=1;
+  c.fillStyle='#1a0f24';c.beginPath();c.moveTo(0,h);for(let x=0;x<=w;x+=10)c.lineTo(x,h*.72+Math.sin(x/90)*h*.03+Math.sin(x/37)*h*.01);c.lineTo(w,h);c.fill();
+  c.fillStyle='#0d0814';for(let i=0;i<9;i++){const bw=w*.07,bx=i*w/9+R()*10,bh=h*(.12+R()*.16);c.fillRect(bx,h-bh,bw,bh);c.fillStyle='#ffc97a';for(let k=0;k<6;k++)if(R()>.5)c.fillRect(bx+4+R()*(bw-10),h-bh+8+R()*(bh-16),4,5);c.fillStyle='#0d0814'}
+  c.fillStyle='#ffffffd0';c.font=`600 ${Math.round(w*.045)}px Inter,Segoe UI,sans-serif`;c.textAlign='center';c.fillText('ARTWORK',w/2,h*.2);
+  renderMedia()}
+function renderMedia(){const url=src.toDataURL('image/jpeg',.6);const n=V.bgType==='carousel'?6:1;$('#media').innerHTML=Array.from({length:n},(_,i)=>`<div class="${i===0?'on':''}" style="background-image:url(${url});filter:hue-rotate(${i*50}deg)"><span>${V.bgType==='video'?'▶ 0:24':V.srcAspect}</span></div>`).join('')+`<div style="display:grid;place-items:center;border-style:dashed;color:var(--muted)">+</div>`}
+
+function setFmt(f){V.fmt=f;if(f==='16:9'){cv.width=960;cv.height=540}else{cv.width=540;cv.height=960}initParticles();fitCanvas()}
+function fitCanvas(){const w=$('#cvWrap');const W=w.clientWidth-32,H=w.clientHeight-32;const ar=cv.width/cv.height;let cw=W,ch=W/ar;if(ch>H){ch=H;cw=H*ar}cv.style.width=cw+'px';cv.style.height=ch+'px';const s=$('#safe');s.style.width=cw*.9+'px';s.style.height=ch*.9+'px';s.style.display=$('#safeChk').checked?'block':'none'}
+window.addEventListener('resize',fitCanvas);
+
+let parts=[],snow=[],orbs=[];
+function initParticles(){const R=rng(11),W=cv.width,H=cv.height;parts=Array.from({length:120},()=>({x:R()*W,y:R()*H,r:.6+R()*1.8,vx:(R()-.5)*.15,vy:-.05-R()*.2,a:.2+R()*.6,ph:R()*6}));snow=Array.from({length:220},()=>({x:R()*W,y:R()*H,z:R(),ph:R()*6}));orbs=Array.from({length:10},()=>({x:R()*W,y:R()*H,r:30+R()*70,vx:(R()-.5)*.25,vy:(R()-.5)*.15,h:R()<.5?'255,190,120':'255,140,180'}))}
+const grains=[...Array(4)].map(()=>{const g=document.createElement('canvas');g.width=240;g.height=240;const c=g.getContext('2d'),d=c.createImageData(240,240);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}c.putImageData(d,0,0);return g});
+
+function spectrum(t,n){const out=[];const beat=Math.pow(Math.max(0,Math.cos(t*Math.PI*2*(96/60))),8);for(let i=0;i<n;i++){const f=i/n;let v=(1-f)*.75*(.55+.45*Math.sin(t*3.1+i*.7))+.25*Math.abs(Math.sin(t*5.3+i*1.9))*(1-f*.5)+beat*(1-f)*.6;v*=.5+.5*Math.sin(t*.9+f*4)*.3+.5;out.push(Math.min(1,Math.max(.02,v*V.vizSens/100)))}return out}
+let peaks=new Array(64).fill(0);
+
+function drawCover(c,img,W,H){const s=Math.max(W/img.width,H/img.height);c.drawImage(img,(W-img.width*s)/2,(H-img.height*s)/2,img.width*s,img.height*s)}
+function drawContain(c,img,W,H){const s=Math.min(W/img.width,H/img.height);c.drawImage(img,(W-img.width*s)/2,(H-img.height*s)/2,img.width*s,img.height*s)}
+function anchorXY(W,H,bw,bh){const ax=V.anchor%3,ay=Math.floor(V.anchor/3);const m=.05;return{x:[W*m+bw/2,W/2,W*(1-m)-bw/2][ax],y:[H*m+bh/2,H/2,H*(1-m)-bh/2][ay]}}
+
+function drawViz(c,W,H,t,style,type,mini){
+  const col1=mini?'#fff':V.vizColor,col2=mini?'#22d3ee':V.vizColor2;const op=mini?1:V.vizOp/100;
+  c.save();c.globalAlpha=op;
+  const base=Math.min(W,H);const size=mini?base*.9:base*V.vizSize/100*(type==='circ'?1:1.6);
+  const p=mini?{x:W/2,y:H/2}:type==='circ'?anchorXY(W,H,size*1.1,size*1.1):anchorXY(W,H,size*1.4,size*.5);
+  const grad=(x0,y0,x1,y1)=>{const g=c.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,col1);g.addColorStop(1,col2);return g};
+  if(type==='bars'){const n=mini?18:40,w=mini?W*.9:size*1.4,h=mini?H*.8:size*.5,sp=spectrum(t,n),bw=w/n;const x0=p.x-w/2;c.fillStyle=grad(x0,0,x0+w,0);
+    sp.forEach((v,i)=>{const bh=v*h,x=x0+i*bw;if(style===0)c.fillRect(x+1,p.y+h/2-bh,bw-2,bh);else if(style===1)c.fillRect(x+1,p.y-bh/2,bw-2,bh);else{const r=(bw-2)/2;c.beginPath();c.roundRect(x+1,p.y+h/2-bh,bw-2,bh,r);c.fill();if(!mini){peaks[i]=Math.max(peaks[i]-.008,v);c.fillRect(x+1,p.y+h/2-peaks[i]*h-6,bw-2,3)}else c.fillRect(x+1,p.y+h/2-bh-5,bw-2,2)}})}
+  else if(type==='wave'){const w=mini?W*.9:size*1.4,h=mini?H*.8:size*.4,n=120,x0=p.x-w/2,sp=spectrum(t,8);const amp=(sp[0]+sp[2])*.5;
+    const yAt=(k,ph)=>Math.sin(k*.18+t*6+ph)*Math.sin(k*.035+t)*amp*h/2+Math.sin(k*.5+t*9)*sp[5]*h*.08;
+    c.strokeStyle=grad(x0,0,x0+w,0);c.fillStyle=grad(x0,0,x0+w,0);c.lineWidth=mini?1.5:2.5;
+    if(style===0){c.beginPath();for(let k=0;k<=n;k++){const x=x0+k/n*w;c[k?'lineTo':'moveTo'](x,p.y+yAt(k,0))}c.stroke()}
+    else if(style===1){c.beginPath();for(let k=0;k<=n;k++)c[k?'lineTo':'moveTo'](x0+k/n*w,p.y-Math.abs(yAt(k,0))-1);for(let k=n;k>=0;k--)c.lineTo(x0+k/n*w,p.y+Math.abs(yAt(k,0))+1);c.closePath();c.fill()}
+    else{c.shadowColor=col2;c.shadowBlur=mini?4:14;[[0,1],[1.3,.55],[2.6,.3]].forEach(([ph,a])=>{c.globalAlpha=op*a;c.beginPath();for(let k=0;k<=n;k++)c[k?'lineTo':'moveTo'](x0+k/n*w,p.y+yAt(k,ph));c.stroke()});c.shadowBlur=0}}
+  else{const R0=mini?base*.22:size*.32,n=mini?24:64,sp=spectrum(t,n/2),L=mini?base*.2:size*.22;const v=k=>sp[k<n/2?k:n-1-k];
+    if(!mini){c.save();c.beginPath();c.arc(p.x,p.y,R0*.92,0,7);c.clip();const ks=Math.max(2*R0/src.width,2*R0/src.height);c.drawImage(src,p.x-src.width*ks/2,p.y-src.height*ks/2,src.width*ks,src.height*ks);c.restore();c.strokeStyle=col1;c.lineWidth=2;c.beginPath();c.arc(p.x,p.y,R0*.92,0,7);c.stroke()}
+    else{c.fillStyle='#ffffff22';c.beginPath();c.arc(p.x,p.y,R0*.9,0,7);c.fill()}
+    c.strokeStyle=grad(p.x-R0,p.y-R0,p.x+R0,p.y+R0);c.fillStyle=c.strokeStyle;c.lineWidth=mini?1.5:Math.max(2,size/90);c.lineCap='round';
+    if(style===0){for(let k=0;k<n;k++){const a=k/n*Math.PI*2-Math.PI/2,l=v(k)*L;c.beginPath();c.moveTo(p.x+Math.cos(a)*R0,p.y+Math.sin(a)*R0);c.lineTo(p.x+Math.cos(a)*(R0+l),p.y+Math.sin(a)*(R0+l));c.stroke()}}
+    else if(style===1){c.beginPath();for(let k=0;k<=n;k++){const a=k/n*Math.PI*2-Math.PI/2,rr=R0+4+v(k%n)*L*.8;c[k?'lineTo':'moveTo'](p.x+Math.cos(a)*rr,p.y+Math.sin(a)*rr)}c.closePath();c.stroke()}
+    else{for(let k=0;k<n;k++){const a=k/n*Math.PI*2-Math.PI/2,rr=R0+6+v(k)*L*.7;c.beginPath();c.arc(p.x+Math.cos(a)*rr,p.y+Math.sin(a)*rr,mini?1.3:2+v(k)*3,0,7);c.fill()}}}
+  c.restore()}
+
+function drawFrame(t){
+  const W=cv.width,H=cv.height,c=ctx;c.save();c.clearRect(0,0,W,H);
+  // background + slow zoom (ping-pong loop)
+  const z=V.fx.zoom.on?1+.07*(.5-.5*Math.cos(2*Math.PI*t/V.fx.zoom.v)):1;
+  c.save();c.translate(W/2,H/2);c.scale(z,z);c.translate(-W/2,-H/2);
+  const srcAR=src.width/src.height,outAR=W/H,mismatch=Math.abs(srcAR-outAR)>.01;
+  if(!mismatch||V.fit==='crop')drawCover(c,src,W,H);
+  else{if(V.fit==='blur'){c.filter=`blur(${V.blur*W/960}px) brightness(${1-V.dim/100})`;drawCover(c,src,W,H);c.filter='none'}else{c.fillStyle=V.solid;c.fillRect(0,0,W,H)}drawContain(c,src,W,H)}
+  c.restore();
+  if(V.fx.glow.on){c.save();c.globalCompositeOperation='lighter';c.globalAlpha=V.fx.glow.v/250;c.filter=`blur(${18*W/960}px) brightness(1.3)`;c.drawImage(cv,0,0);c.restore()}
+  if(V.fx.bokeh.on){c.save();c.globalCompositeOperation='lighter';orbs.forEach(o=>{o.x=(o.x+o.vx+W)%W;o.y=(o.y+o.vy+H)%H;const g=c.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);g.addColorStop(0,`rgba(${o.h},${V.fx.bokeh.v/100})`);g.addColorStop(1,`rgba(${o.h},0)`);c.fillStyle=g;c.beginPath();c.arc(o.x,o.y,o.r,0,7);c.fill()});c.restore()}
+  if(V.fx.dust.on){const n=Math.round(parts.length*V.fx.dust.v/100);c.save();c.fillStyle='#fff3d6';for(let i=0;i<n;i++){const p=parts[i];p.x=(p.x+p.vx+Math.sin(t+p.ph)*.1+W)%W;p.y=(p.y+p.vy+H)%H;c.globalAlpha=p.a*(.6+.4*Math.sin(t*1.5+p.ph));c.beginPath();c.arc(p.x,p.y,p.r,0,7);c.fill()}c.restore()}
+  if(V.fx.snow.on){const n=Math.round(snow.length*V.fx.snow.v/100);c.save();c.fillStyle='#fff';for(let i=0;i<n;i++){const s=snow[i];s.y+=.3+s.z*1.1;s.x+=Math.sin(t*.8+s.ph)*.3*s.z;if(s.y>H+4){s.y=-4;s.x=Math.random()*W}c.globalAlpha=.35+s.z*.6;c.beginPath();c.arc(s.x,s.y,.8+s.z*2.2,0,7);c.fill()}c.restore()}
+  // text
+  const sc=W/960*(V.fmt==='9:16'?1.4:1);
+  if(V.ttOn){c.save();c.font=`600 ${Math.round(V.txtSize*.75*sc)}px "${V.font}",Inter,Segoe UI,sans-serif`;c.fillStyle=V.txtColor;c.shadowColor='#000a';c.shadowBlur=8;c.textAlign='left';c.globalAlpha=.9;c.fillText(V.ttText,W*.05,H*.08+V.txtSize*.6*sc);c.restore()}
+  if(V.npOn){const i=curIdx(pt);const {chap}=timeline();const since=pt-chap[i];const a=Math.min(1,since/1.2);const txt=V.npFmt==='t'?tracks[i].title:V.npFmt==='it'?`${i+1}. ${tracks[i].title}`:`Now Playing — ${tracks[i].title}`;
+    c.save();c.globalAlpha=a;c.font=`700 ${Math.round(V.txtSize*sc)}px "${V.font}",Inter,Segoe UI,sans-serif`;c.fillStyle=V.txtColor;c.shadowColor='#000c';c.shadowBlur=10;c.textAlign='left';const y=H*.92-(1-a)*12;c.fillText(txt,W*.05,y);c.font=`500 ${Math.round(V.txtSize*.5*sc)}px Inter,Segoe UI,sans-serif`;c.globalAlpha=a*.75;c.fillText('ĐANG PHÁT',W*.05,y-V.txtSize*1.05*sc);c.restore()}
+  if(V.vizOn)drawViz(c,W,H,t,V.vizStyle,V.vizType,false);
+  if(V.fx.grain.on){c.save();c.globalAlpha=V.fx.grain.v/100;c.globalCompositeOperation='overlay';const g=grains[Math.floor(t*24)%4];const pat=c.createPattern(g,'repeat');c.fillStyle=pat;c.fillRect(0,0,W,H);c.restore()}
+  c.restore()}
+
+function renderVizStyles(){$('#vizStyles').innerHTML=VIZ_NAMES[V.vizType].map((n,i)=>`<div class="vs ${i===V.vizStyle?'on':''}" data-i="${i}"><canvas width="120" height="50"></canvas>${n}</div>`).join('');$$('.vs').forEach(d=>d.onclick=()=>{V.vizStyle=+d.dataset.i;renderVizStyles();syncVideoUI()});$$('#vizType button').forEach(b=>b.classList.toggle('on',b.dataset.v===V.vizType))}
+function drawVizThumbs(t){$$('.vs canvas').forEach((cc,i)=>{const c=cc.getContext('2d');c.clearRect(0,0,120,50);drawViz(c,120,50,t,i,V.vizType,true)})}
+function fxCountUI(){const n=Object.values(V.fx).filter(f=>f.on).length;[$('#fxCount'),$('#fxCount2')].forEach(e=>{e.textContent=`(${n})`;e.classList.toggle('warn',n>3)});return n}
+function renderFx(){
+  $('#fxList').innerHTML=FX.filter(f=>V.fx[f.k]?.on).map(f=>`<div class="lg-i"><span>${f.n}</span><span class="num">${V.fx[f.k].v}</span></div>`).join('')||'<div class="lg-i">Không có effect</div>';
+  $('#fxPanel').innerHTML=(fxCountUI()>3?'<div class="note" style="border-color:var(--warn);color:var(--warn);margin-bottom:10px">⚠ Đang bật hơn 3 effect. Guideline khuyên 2–3 effect: nhiều hơn dễ rối mắt, file nặng hơn, render chậm hơn.</div>':'')+
+   FX.map(f=>{const s=V.fx[f.k];if(!s)return`<div class="fx dis"><div class="fx-h"><input type="checkbox" disabled><b>${f.n}</b><span class="badge ${f.pr==='P2'?'p2':'p3'}">${f.pr}</span></div></div>`;
+     return`<div class="fx ${s.on?'on':''}"><div class="fx-h"><input type="checkbox" data-k="${f.k}" ${s.on?'checked':''}><b>${f.n}</b></div><div class="fx-b"><span class="lbl">${f.p}: <span class="num">${s.v}</span></span><input type="range" min="${f.min}" max="${f.max}" value="${s.v}" data-r="${f.k}"></div></div>`}).join('')+
+   '<div class="note" style="margin-top:10px">Mọi effect P1 sinh bằng shader và loop liền mạch — không cần stock footage.</div>';
+  $$('#fxPanel input[type=checkbox]').forEach(c=>c.onchange=()=>{V.fx[c.dataset.k].on=c.checked;renderFx();if(fxCountUI()>3)toast('Guideline khuyên dùng 2–3 effect. Nhiều hơn dễ rối mắt và file nặng.','warn')});
+  $$('#fxPanel input[type=range]').forEach(r=>r.oninput=()=>{V.fx[r.dataset.r].v=+r.value;r.previousElementSibling.querySelector('span').textContent=r.value;$('#fxList').innerHTML=FX.filter(f=>V.fx[f.k]?.on).map(f=>`<div class="lg-i"><span>${f.n}</span><span class="num">${V.fx[f.k].v}</span></div>`).join('')})}
+function renderPresets(){$('#presets').innerHTML=STYLE_PRESETS.map(p=>`<button class="pcard" data-id="${p.id}"><b>${p.id} · ${p.n}</b><small>${p.d}</small></button>`).join('');
+  $$('.pcard').forEach(b=>b.onclick=()=>{const p=STYLE_PRESETS.find(x=>x.id===b.dataset.id);Object.keys(V.fx).forEach(k=>V.fx[k].on=false);Object.entries(p.fx).forEach(([k,v])=>{V.fx[k].on=true;V.fx[k].v=v});[V.vizType,V.vizStyle]=p.viz;setAnchor(V.vizType==='circ'?5:8);renderFx();renderVizStyles();syncVideoUI();selLayer('fx');toast(`Đã áp dụng preset ${p.id} · ${p.n}${/P2/.test(p.d)?' — effect P2 sẽ có ở bản sau':''}`)})}
+function selLayer(l){$$('.lg-h').forEach(h=>h.classList.toggle('sel',h.dataset.l===l));$$('.ipanel').forEach(p=>p.classList.toggle('on',p.id==='ip-'+l))}
+$$('.lg-h').forEach(h=>h.onclick=()=>selLayer(h.dataset.l));
+function syncVideoUI(){$('#vizName').textContent=`${{bars:'Bars',wave:'Waveform',circ:'Circular'}[V.vizType]} · ${VIZ_NAMES[V.vizType][V.vizStyle]}`;$('#vizSizeV').textContent=V.vizSize+'%';$('#vizWarn').style.color=V.vizSize>40?'var(--warn)':'';$('#vizWarn').textContent=V.vizSize>40?'⚠ Visualizer đang khá lớn — dễ lấn át artwork và tiêu đề.':'Guideline: giữ visualizer nhỏ, tránh đè lên tiêu đề và chủ thể chính.';
+  $('#bgName').textContent=`${{image:'Ảnh',carousel:'Carousel',video:'Video loop'}[V.bgType]} · ${{blur:'Blur fill',solid:'Solid color',crop:'Crop fill'}[V.fit]}`;$('#npState').textContent=V.npOn?'bật':'tắt';$('#ttState').textContent=V.ttOn?'bật':'tắt';
+  $('#blurOpt').classList.toggle('hide',V.fit!=='blur');$('#solidOpt').classList.toggle('hide',V.fit!=='solid');$('#carOpt').classList.toggle('hide',V.bgType!=='carousel');$('#vidOpt').classList.toggle('hide',V.bgType!=='video')}
+$('#vizAnchor').innerHTML=Array.from({length:9},(_,i)=>`<button data-i="${i}" class="${i===V.anchor?'on':''}"></button>`).join('');
+$$('#vizAnchor button').forEach(b=>b.onclick=()=>{V.anchor=+b.dataset.i;$$('#vizAnchor button').forEach(x=>x.classList.toggle('on',x===b))});
+function setAnchor(a){V.anchor=a;$$('#vizAnchor button').forEach(x=>x.classList.toggle('on',+x.dataset.i===a))}
+segInit('#vizType',v=>{V.vizType=v;V.vizStyle=0;setAnchor(v==='circ'?5:8);renderVizStyles();syncVideoUI()});
+segInit('#fmtSeg',setFmt);segInit('#srcAspect',v=>{V.srcAspect=v;makeSrc()});segInit('#fitSeg',v=>{V.fit=v;syncVideoUI()});segInit('#bgType',v=>{V.bgType=v;renderMedia();syncVideoUI()});
+const bind=(id,k,num,ev='input')=>$(id).addEventListener(ev,e=>{V[k]=e.target.type==='checkbox'?e.target.checked:num?+e.target.value:e.target.value;syncVideoUI()});
+bind('#vizOn','vizOn',0,'change');bind('#vizColor','vizColor');bind('#vizColor2','vizColor2');bind('#vizSize','vizSize',1);bind('#vizSens','vizSens',1);bind('#vizOp','vizOp',1);
+bind('#blurAmt','blur',1);bind('#dimAmt','dim',1);bind('#solidColor','solid');bind('#npOn','npOn',0,'change');bind('#npFmt','npFmt',0,'change');bind('#ttOn','ttOn',0,'change');bind('#ttText','ttText');bind('#txtSize','txtSize',1);bind('#txtColor','txtColor');bind('#npFont','font',0,'change');
+$('#safeChk').onchange=fitCanvas;
+function renderMarks(){const {chap,total}=timeline();$('#marks').innerHTML=chap.map((c,i)=>`<i style="left:${c/total*100}%" title="${fmt(c)} ${tracks[i].title}"></i>`).join('')}
+
+/* ---------- ④ export ---------- */
+const queue=[{n:'Chill Night Mix · 16:9 · 1080p30',p:64,chunk:22,of:34,eta:26*60,st:'run'},{n:'Chill Night Mix · 9:16 · 1080p30',st:'wait'},{n:'Jazz Café Vol.2 · 16:9 · 1080p30',st:'done',at:'10/10 21:04'},{n:'Lofi Rain Vol.1 · 16:9 · 1080p30',st:'stop',chunk:9,of:30}];
+segInit('#fpsSeg',renderExport);segInit('#qSeg',renderExport);$('#enc').onchange=renderExport;$$('.ex').forEach(c=>c.onchange=renderExport);
+$('#chapChk').onchange=()=>{$('#chapWrap').classList.toggle('hide',!$('#chapChk').checked)};
+$('#startRender').onclick=()=>{const fm=[$('#ex169').checked&&'16:9',$('#ex916').checked&&'9:16'].filter(Boolean);fm.forEach(f=>queue.push({n:`Chill Night Mix · ${f} · 1080p${$('#fpsSeg .on').dataset.v}`,st:'wait'}));renderExport();toast(`Đã thêm ${fm.length} job vào hàng đợi`)};
+function renderExport(){const {total,chap}=timeline();const fps=+$('#fpsSeg .on').dataset.v,mb=+$('#qSeg .on').dataset.v,sp=+$('#enc').value;const nf=($('#ex169').checked?1:0)+($('#ex916').checked?1:0);
+  $('#eDur').textContent=fmt(total);const gb=total*(mb*(fps===60?1.5:1)+.32)/8/1024*nf;$('#eSize').textContent=nf?`~${gb.toFixed(1)} GB`:'—';$('#eTime').textContent=nf?`~${fmt(total/sp*nf*(fps===60?1.8:1))}`:'—';
+  const sb=$('#startRender');sb.disabled=!nf;sb.title=nf?'':'Chọn ít nhất 1 khung hình';
+  $('#chapters').textContent=chap.map((c,i)=>`${fmt(c)} ${tracks[i].title}`).join('\n');
+  $('#queue').innerHTML=queue.map((q,i)=>`<div class="qitem"><div><b>${q.n}</b></div><div>${q.st==='run'?`<div class="bar"><i style="width:${q.p}%"></i></div><span class="muted num" style="font-size:12px">${q.p}% · chunk ${q.chunk}/${q.of} · còn ~${Math.round(q.eta/60)} phút</span>`:q.st==='wait'?'<span class="muted">Đang chờ</span>':q.st==='done'?`<span class="st-ok">✓ Xong · ${q.at}</span>`:`<span class="st-warn">⏸ Bị gián đoạn tại chunk ${q.chunk}/${q.of}</span>`}</div><div class="row" style="justify-content:flex-end">${q.st==='done'?'<button class="btn sm">Mở folder</button><button class="btn sm">Xem</button>':q.st==='stop'?`<button class="btn sm primary" data-res="${i}">Tiếp tục từ chunk ${q.chunk}</button>`:`<button class="btn sm" data-cancel="${i}">Hủy</button>`}</div></div>`).join('');
+  $$('[data-cancel]').forEach(b=>b.onclick=()=>{queue.splice(+b.dataset.cancel,1);renderExport();toast('Đã hủy job')});
+  $$('[data-res]').forEach(b=>b.onclick=()=>{const q=queue[+b.dataset.res];q.st=queue.some(x=>x.st==='run')?'wait':'run';q.p=Math.round(q.chunk/q.of*100);q.eta=1800;renderExport();toast('Tiếp tục render từ chunk '+q.chunk)});
+  $('#qInd').querySelector('span').textContent=queue.filter(q=>q.st==='run'||q.st==='wait').length}
+setInterval(()=>{const q=queue.find(x=>x.st==='run');if(!q){const w=queue.find(x=>x.st==='wait');if(w){w.st='run';w.p=0;w.chunk=1;w.of=34;w.eta=72*60}}else{q.p=Math.min(100,q.p+1);q.chunk=Math.max(1,Math.round(q.p/100*q.of));q.eta=Math.max(0,q.eta-40);if(q.p>=100){q.st='done';q.at='vừa xong';toast('✓ Render xong: '+q.n)}}if(curTab==='exp')renderExport();else $('#qInd').querySelector('span').textContent=queue.filter(q=>q.st==='run'||q.st==='wait').length},1500);
+
+/* ---------- loop ---------- */
+function loop(now){const dt=Math.min(.1,(now-lastFrame)/1000);lastFrame=now;if(playing){pt+=dt;if(pt>=timeline().total)pt=0}
+  vclock+=dt;if(curTab==='vid'){drawFrame(vclock);drawVizThumbs(vclock)}
+  if(playing||curTab==='vid')updatePlayer();requestAnimationFrame(loop)}
+
+/* ---------- init ---------- */
+renderLib();parseTL();renderMix();makeSrc();initParticles();renderVizStyles();renderFx();renderPresets();syncVideoUI();renderMarks();renderExport();go('lib');requestAnimationFrame(loop);
+</script>
+</body>
+</html>
