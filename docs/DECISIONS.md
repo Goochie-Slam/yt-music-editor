@@ -25,3 +25,4 @@ Ghi lại mọi quyết định có ảnh hưởng lâu dài: **đã chốt gì,
 | D-19 | 2026-10-12 | Effect / overlay / visualizer là hàm thuần của thời gian `f(t)` | Bắt buộc để chunk, resume và preview cho ra cùng một frame | Claude |
 | D-20 | 2026-10-12 | Shader GLSL dùng chung cho preview (WebGL2) và render (moderngl) | Preview = Render (N6) | Claude |
 | D-21 | 2026-10-12 | **Chưa chốt:** render "vẽ từng frame" (A) hay "loop nền 1 lần + ghép" (B) | Phụ thuộc số liệu benchmark | → **M0 / Spike S1** |
+| D-22 | 2026-10-12 | Curve `log` = `x^2.5` (fade-in), fade-out = fade-in đảo ngược thời gian cho **mọi** curve | Bản cũ trong CODING-GUIDE và mockup dùng 2 công thức không đối xứng cho in/out — QA phát hiện khi viết `curves.py` | Claude |

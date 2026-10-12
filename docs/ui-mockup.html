@@ -522,8 +522,8 @@ $('#defPreset').onchange=e=>{defPreset=+e.target.value};
 $('#applyAll').onclick=()=>{for(let i=0;i<tracks.length-1;i++)trans[key(tracks[i],tracks[i+1])]=mkT(defPreset);renderMix();toast(`Đã áp dụng "${PRESETS[defPreset].name}" cho ${tracks.length-1} điểm nối · Hoàn tác`)};
 
 const CURVES=['Equal-power','Linear','Log','S-curve'];
-function gainIn(c,x){x=Math.min(1,Math.max(0,x));if(c==='Equal-power')return Math.sin(x*Math.PI/2);if(c==='Log')return 1-Math.pow(1-x,2.5);if(c==='S-curve')return .5-.5*Math.cos(Math.PI*x);return x}
-function gainOut(c,x){x=Math.min(1,Math.max(0,x));if(c==='Equal-power')return Math.cos(x*Math.PI/2);if(c==='Log')return Math.pow(1-x,2.5);if(c==='S-curve')return .5+.5*Math.cos(Math.PI*x);return 1-x}
+function gainIn(c,x){x=Math.min(1,Math.max(0,x));if(c==='Equal-power')return Math.sin(x*Math.PI/2);if(c==='Log')return Math.pow(x,2.5);if(c==='S-curve')return .5-.5*Math.cos(Math.PI*x);return x}
+function gainOut(c,x){return gainIn(c,1-x)}
 let pv=null; // preview anim
 function tWin(t){const a=Math.min(-t.fo,-t.ov)-2,b=Math.max(0,-t.ov+t.fi)+2;return[a,b]}
 function drawTSvg(t,i){

@@ -239,8 +239,10 @@ chapter[i+1]= start[i+1] + overlap[i]/2   nếu overlap[i] > 0   # giữa vùng 
 |---|---|
 | `equal-power` | `sin(x·π/2)` |
 | `linear` | `x` |
-| `log` | `1 − (1 − x)^2.5` |
+| `log` | `x^2.5` — gần tuyến tính theo dB, nghe đều tai nhất khi fade từ / về im lặng |
 | `s-curve` | `(1 − cos(π·x)) / 2` |
+
+Fade-out luôn là fade-in **đảo ngược thời gian** — không có công thức fade-out riêng.
 
 Hai bản cài đặt **PHẢI** cho cùng kết quả: test đọc `shared/fixtures/curves.json` (101 điểm mỗi curve) ở cả pytest và Vitest, sai số ≤ 1e-6.
 
