@@ -1,6 +1,6 @@
 # YT Music Editor — UI/UX Design v0.1
 
-> v0.2 — đã cập nhật theo feedback lần 1 (timeline layer cho tab Video, cắt tracklist → mix, 2K/4K).
+> v0.3 — feedback lần 2: thêm Overlay (video / ảnh / màu-gradient-vignette). v0.2 — feedback lần 1: timeline layer cho tab Video, cắt tracklist → mix, 2K/4K.
 > Mockup tương tác: mở [`ui-mockup.html`](./ui-mockup.html) bằng trình duyệt (không cần cài gì).
 > Requirement IDs (F1.x, F2.x…) tham chiếu [`REQUIREMENTS.md`](./REQUIREMENTS.md).
 
@@ -134,6 +134,9 @@ Settings (global): folder mặc định, yt-dlp update, encoder, cache, quản l
 │ ◎ Logo     │[▌Logo kênh ………………………………………………………………………▐]   │                  │
 │ VISUALIZER │                                              │                  │
 │ ▁▃ Viz     │[Circular · Radial Bars · theo audio ……………]   │                  │
+│ OVERLAY    │                                              │                  │
+│ ◐ Light lk │[▌light_leak.mp4 · Screen 45% │ │ │ │ │ │ ▐]   │                  │
+│ ◐ Gradient │[▌Gradient đáy · 60% ……………………………………………▐]   │                  │
 │ EFFECT     │                                              │                  │
 │ ✦ Zoom     │[Slow Zoom · loop 60s │    │    │    │    │ ]  │                  │
 │ ✦ Grain    │[Film Grain · loop 30s│ │ │ │ │ │ │ │ │ │ │ ]  │                  │
@@ -148,7 +151,7 @@ Settings (global): folder mặc định, yt-dlp update, encoder, cache, quản l
 **Nguyên tắc: video = các element chồng lên nhau, và mọi element đều nhìn thấy được trên timeline.** Không có thứ gì được render mà user không thấy hoặc không sửa được.
 
 **Timeline layer** (dưới canvas, cao ~40% màn hình):
-- Track chia theo **5 nhóm**, từ trên xuống = từ lớp trên cùng xuống lớp dưới cùng: **Chữ & hình → Visualizer → Effect → Hình nền → Audio**.
+- Track chia theo **6 nhóm**, từ trên xuống = từ lớp trên cùng xuống lớp dưới cùng: **Chữ & hình → Visualizer → Overlay → Effect → Hình nền → Audio**. (Ngoại lệ: Film Grain luôn phủ trên cùng.)
 - Mỗi track có header (icon · tên · mắt ◉/○) và thanh theo thời gian. Nhãn thanh **dính theo khi cuộn ngang**, không bị trôi mất.
 - **Zoom**: Toàn bộ (cả mix trong 1 màn) / 10 phút / 2 phút. Khi đang phát và đã zoom, timeline tự cuộn theo playhead.
 - Click thước thời gian hoặc vùng trống của track → tua tới đó.
@@ -159,6 +162,7 @@ Settings (global): folder mặc định, yt-dlp update, encoder, cache, quản l
 | **Tên playlist / Phụ đề / Text** | Thanh từ lúc bắt đầu đến lúc kết thúc hiển thị, ghi nội dung text | **Kéo đầu trái / phải** = đổi lúc hiện / ẩn · kéo giữa = dời cả đoạn |
 | **Logo / Ảnh** | Như text | Như text |
 | **Visualizer** | Thanh suốt video, ghi loại · style | Click = chọn |
+| **Overlay** (video / ảnh / màu) | Thanh theo thời gian hiển thị, ghi file · blend · opacity; overlay video có vạch tại mỗi lần lặp clip | Kéo 2 đầu / kéo giữa như text |
 | **Mỗi effect** | Thanh suốt video, **vạch dọc tại mỗi chu kỳ loop**, ghi "loop 60s" | Click = chọn, Inspector mở đúng effect đó |
 | **Artwork** | Ảnh tĩnh: 1 thanh · **Carousel: mỗi ảnh 1 đoạn khớp với bài** · Video: vạch tại mỗi lần lặp clip | Click = chọn |
 | **Nền** | Fit mode + **"LOOP 60s × 154 — render 1 lần rồi lặp"**, vạch trắng tại mỗi điểm nối. Carousel / video: cảnh báo "không loop được, render toàn bộ" | Click = chọn |
@@ -176,16 +180,18 @@ Settings (global): folder mặc định, yt-dlp update, encoder, cache, quản l
 - **Now Playing**: tên hiển thị của bài đang chọn (sửa ở đây = sửa trong Mix, không ghi tag) · format · dòng nhãn "ĐANG PHÁT" · font · animation khi đổi bài · cỡ · màu · X/Y.
 - **Logo / Ảnh**: file · kích thước · opacity · X/Y · thời gian hiển thị.
 - **Visualizer**: Bars / Waveform / Circular · 3 style có thumbnail chạy thật · màu gradient · kích thước (cảnh báo khi > 40%) · độ nhạy · opacity · 9 điểm neo · X/Y.
-- **Effect**: danh sách đủ 11 effect (P2/P3 hiện mờ kèm badge); effect đang chọn được viền nổi bật; cảnh báo khi bật > 3.
+- **Overlay**: tên · file (video: mp4/mov/webm, ảnh: PNG) hoặc kiểu Màu phủ / Gradient (4 hướng) / Vignette · **blend mode** kèm 1 dòng giải thích (Screen = footage nền đen…) · opacity · crossfade điểm loop clip · thời gian hiển thị · Xóa. Overlay phủ toàn khung nên **chọn qua timeline**: click trên canvas vẫn chọn element bên dưới.
+- **Effect**: danh sách effect (P2/P3 hiện mờ kèm badge); effect đang chọn được viền nổi bật; cảnh báo khi bật > 3.
 - **Artwork**: Ảnh / Carousel / Video loop · media · đổi ảnh theo bài / theo thời gian · crossfade điểm loop video · kích thước 40–150% · bo góc · đổ bóng · viền · X/Y.
 - **Nền**: Blur fill / Solid color / Crop fill · blur · độ tối · màu · **khối "Loop nền"**: chu kỳ, số lần lặp, giải thích vì sao render nhanh · nút **⟲ Xem chỗ nối loop**.
 
 **Khác:**
 - **⟲ Xem chỗ nối loop** (trên timeline + trong Inspector Nền): nhảy tới 3s trước điểm nối gần nhất rồi tự phát, để soi xem có giật không.
 - **Preset style A–F**: áp dụng bộ effect + visualizer, sau đó chọn sẵn track effect đầu tiên để chỉnh tiếp.
+- Cột trái có mục **Thêm overlay**: ＋ Overlay video · ＋ Overlay ảnh (PNG) · ＋ Màu / Gradient / Vignette.
 - **＋ Text** thêm text hiển thị 5 phút tính từ playhead (thường dùng cho câu kêu gọi subscribe, lời chào…). **＋ Ảnh / Logo** thêm được nhiều. MVP chỉ có **1 visualizer** / video.
 - Ở tab Video, player bar chung bị ẩn; nút play và thời gian nằm trên đầu timeline.
-- **Ngoài phạm vi:** keyframe animation (element bay vào, đổi vị trí theo thời gian). Có cái này là thành video editor tổng quát rồi — không phải mục tiêu của app.
+- **Chưa làm ở giai đoạn này (P3):** keyframe animation (element bay vào, đổi vị trí theo thời gian). MVP chỉ có animation vào/ra dạng preset (Fade, Slide).
 
 ### ④ Xuất
 

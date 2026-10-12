@@ -1,6 +1,6 @@
 # YT Music Editor — Requirements v0.1
 
-> Trạng thái: **Draft v0.2 — đã cập nhật theo feedback lần 1**
+> Trạng thái: **Draft v0.3 — đã cập nhật theo feedback lần 2** (overlay cơ bản bắt buộc, GPU 6GB)
 > Ngày: 2026-10-12
 > Tài liệu liên quan: [`UI-UX.md`](./UI-UX.md) · [`ui-mockup.html`](./ui-mockup.html) · [`visual-effects-reference.md`](./visual-effects-reference.md)
 
@@ -38,9 +38,10 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 | 13 | Tên bài + timestamp | Có, **optional** (bật/tắt riêng) |
 | 14 | Độ dài | Mix 1–3 tiếng |
 | 15–17 | Nền tảng | Local only · Windows · Web app local (Python + FFmpeg backend, UI trên trình duyệt) |
-| 18 | GPU | **NVIDIA RTX 3050** → dùng NVENC để encode |
+| 18 | GPU | **NVIDIA RTX 3050 6GB** → dùng NVENC để encode |
 | 19 | Cắt tracklist | Có — cắt 1 file dài thành nhiều bài **rồi mix lại** |
 | 20 | Độ phân giải | **1080p mặc định**; 1440p (2K) và 2160p (4K) là tùy chọn |
+| 22 | Keyframe / Overlay | Keyframe animation **chưa làm ở giai đoạn này**. **Overlay cơ bản bắt buộc có ngay MVP** (video, ảnh PNG, màu / gradient / vignette) |
 | 21 | Tab Video | Hiển thị **mọi element** tạo thành video trên timeline layer (gồm cả vòng loop), element nào cũng chọn và chỉnh được |
 
 ---
@@ -53,7 +54,8 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 | A2 | Link playlist (YouTube playlist, SoundCloud set) → app liệt kê bài, user tick chọn bài cần lấy | — |
 | A3 | Tên bài hiển thị lấy từ **tên file / tiêu đề link**, user sửa được **trong app** (không ghi vào tag MP3) | — |
 | ~~A4~~ | ✅ 1080p mặc định, 1440p / 4K tùy chọn, 30fps mặc định (có 60fps) | — |
-| A5 | RTX 3050 là bản **desktop 8GB**. Nếu là bản **laptop 4GB** thì 4K có thể thiếu VRAM khi render effect | Bản laptop: 4K chỉ ổn ở 30fps, ít effect. Spike S1 sẽ đo |
+| ~~A5~~ | ✅ RTX 3050 **6GB**. VRAM đủ cho cả 4K; giới hạn là **sức tính toán** (bản 6GB yếu hơn bản 8GB ~20–30%). Spike S1 sẽ đo | — |
+| A7 | "Overlay cơ bản" = 3 loại: **video overlay** (footage mưa trên kính, khói, light leak…), **ảnh overlay** (PNG khung / texture), **lớp màu / gradient / vignette** — mỗi loại có blend mode, opacity, thời gian hiển thị | Nếu anh muốn nghĩa khác (ví dụ animation chữ vào/ra) thì báo em |
 | A6 | UI tiếng Việt, hỗ trợ font có dấu tiếng Việt cho chữ trên video | — |
 
 ---
@@ -168,6 +170,7 @@ Video = **chồng các element**. Mọi element đều hiện trên timeline, ch
 | | **Logo kênh**, Ảnh thêm | file, kích thước, opacity, vị trí, thời gian hiển thị |
 | Visualizer | Visualizer | loại / style, màu, kích thước, độ nhạy, opacity, vị trí |
 | Effect | **Mỗi effect đang bật = 1 track** | bật/tắt, tham số, chu kỳ loop |
+| Overlay | **Overlay video / ảnh / màu-gradient-vignette** (nhiều cái) | file, blend mode, opacity, thời gian hiển thị; video: crossfade điểm loop clip |
 | Hình nền | **Artwork** (ảnh / carousel / video loop) | media, kích thước, bo góc, đổ bóng, viền, vị trí |
 | | **Nền** (phần lấp khi artwork khác tỉ lệ) | Blur fill / Solid color / Crop fill, blur, độ tối; **thông tin vòng loop** |
 | Audio | Mix audio (chỉ xem) | link sang tab Mix |
@@ -184,10 +187,10 @@ Video = **chồng các element**. Mọi element đều hiện trên timeline, ch
 | F3.45 | Nút **"Xem chỗ nối loop"**: nhảy tới 3s trước điểm nối gần nhất và phát, để kiểm tra có giật không | P1 |
 | F3.46 | Khi nền là carousel / video (không loop được) → track Nền và Inspector cảnh báo "render toàn bộ, chậm hơn" | P1 |
 | F3.47 | Carousel đổi theo bài: track Artwork hiện từng ảnh khớp với từng bài | P1 |
-| F3.48 | Thêm element: **＋ Text**, **＋ Ảnh / Logo** (nhiều cái), ＋ Effect, ＋ Visualizer (MVP: 1 visualizer / video). Element thêm xóa được; element mặc định chỉ ẩn được | P1 |
+| F3.48 | Thêm element: **＋ Text**, **＋ Ảnh / Logo** (nhiều cái), **＋ Overlay video / ảnh / màu** (nhiều cái), ＋ Effect, ＋ Visualizer (MVP: 1 visualizer / video). Element thêm xóa được; element mặc định chỉ ẩn được | P1 |
 | F3.49 | Vị trí element lưu **riêng cho 16:9 và 9:16** — chỉnh khung này không làm hỏng khung kia | P1 |
 | F3.50 | Thứ tự track = thứ tự chồng lớp; kéo header track để đổi thứ tự trong nhóm Chữ & hình | P2 |
-| F3.51 | Keyframe animation cho element (bay vào, đổi vị trí theo thời gian) | **Ngoài phạm vi** — đây là video editor tổng quát, không phải mục tiêu |
+| F3.51 | Keyframe animation cho element (bay vào, đổi vị trí theo thời gian) | **P3** — chưa làm ở giai đoạn này. MVP chỉ có animation vào/ra preset (Fade, Slide) |
 
 #### 3.1 Canvas & khung hình
 
@@ -224,7 +227,7 @@ Theo `visual-effects-reference.md`. Mọi effect render **procedural** (tự sin
 | F3.16 | VHS / Chromatic Aberration | độ lệch RGB, scanline, noise, tần suất glitch nhẹ | P2 |
 | F3.17 | Fog / Smoke | mật độ, tốc độ, màu | P2 |
 | F3.18 | Rain (procedural, rơi ngoài trời) | mật độ, góc, tốc độ | P2 |
-| F3.19 | **Custom Overlay**: user đưa video overlay (mưa trên kính, khói, light leak) + blend mode Screen / Add / Overlay + opacity | — | P2 |
+| F3.19 | ~~Custom Overlay~~ → nâng thành element **Overlay** riêng, **P1** — xem mục 3.3b | — | — |
 | F3.20 | Parallax / 2.5D | cần AI tách lớp depth + inpaint | **P3** — xem R5 |
 
 | ID | Requirement | Ưu tiên |
@@ -235,6 +238,22 @@ Theo `visual-effects-reference.md`. Mọi effect render **procedural** (tự sin
 | F3.24 | Lưu preset effect của user (gồm effect + visualizer + text style) | P1 |
 | F3.25 | Tùy chọn "phản ứng theo bass" cho Glow và Zoom (dùng dữ liệu audio thật) | P2 |
 | F3.26 | Mọi effect với nền ảnh tĩnh phải **loop liền mạch**, không có cú giật khi reset | P1 |
+
+#### 3.3b Overlay (P1 — bắt buộc)
+
+Overlay = lớp phủ toàn khung, nằm **trên effect và artwork, dưới visualizer và chữ**. App **không kèm sẵn footage** (vướng bản quyền) — user tự đưa file vào; riêng loại màu / gradient / vignette thì app tự sinh.
+
+| ID | Requirement | Ưu tiên |
+|---|---|---|
+| F3.52 | **Overlay video**: mp4 / mov / webm. Tự lặp suốt thời gian hiển thị, tùy chọn **crossfade 1s tại điểm loop** của clip | P1 |
+| F3.53 | Hỗ trợ video có kênh alpha: **.mov ProRes 4444** và **.webm VP9 alpha**. Footage nền đen (phổ biến nhất) dùng blend Screen | P1 |
+| F3.54 | **Overlay ảnh**: PNG (có alpha) — khung film, viền, texture giấy, vết xước | P1 |
+| F3.55 | **Màu / Gradient / Vignette**: màu phủ toàn khung · gradient theo 4 hướng (mặc định "đậm ở đáy" để chữ Now Playing dễ đọc) · vignette tối viền | P1 |
+| F3.56 | Blend mode: **Normal · Screen · Add · Overlay · Multiply · Soft light**, mỗi mode có 1 dòng giải thích dùng khi nào | P1 |
+| F3.57 | Opacity 0–100%, thời gian hiển thị (kéo 2 đầu thanh như text), ẩn / hiện, xóa, thêm nhiều overlay | P1 |
+| F3.58 | Overlay được ghép ở **bước composite cuối**, không nằm trong vòng loop nền → clip overlay dài bao nhiêu cũng không làm vòng loop nền dài ra | P1 |
+| F3.59 | Overlay video: scale phủ kín khung (cover) mặc định; tùy chọn fit / vị trí | P2 |
+| F3.60 | Đổi thứ tự chồng giữa các overlay (kéo header track) | P2 |
 
 #### 3.4 Sóng nhạc (Visualizer)
 
@@ -335,7 +354,7 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 1. **Audio master:** normalize từng bài (cache) → trim → fade/overlap theo transition → limiter → `mix.wav`.
 2. **Phân tích audio:** FFT cho mọi frame (numpy, vector hóa) → mảng dữ liệu cho visualizer.
 3. **Background loop:** với nền ảnh tĩnh, mọi effect thiết kế **tuần hoàn** (chu kỳ 30–60s) → render **1 vòng loop duy nhất**, sau đó lặp. Thời gian render nền không phụ thuộc độ dài mix.
-4. **Overlay pass:** visualizer + text render theo từng frame trên toàn thời lượng, composite lên nền đã loop.
+4. **Overlay pass:** overlay video/ảnh/màu + visualizer + text composite theo từng frame trên toàn thời lượng, đè lên nền đã loop. Overlay video được decode bằng **NVDEC** (giải mã phần cứng trên RTX 3050) để không tốn CPU.
 5. **Encode theo chunk** bằng GPU encoder → nối chunk (concat, không re-encode) → ghép audio AAC.
 
 > Lưu ý: tối ưu ở bước 3 **chỉ áp dụng cho nền ảnh tĩnh**. Carousel và video nền phải render effect trên toàn thời lượng → chậm hơn đáng kể.
@@ -353,6 +372,7 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 | R5 | **Parallax 2.5D** cần model AI tách depth + inpaint. Kết quả hay lỗi méo mặt / viền cắt — đúng thứ guideline bảo tránh | Cao | Đẩy xuống P3, chỉ làm nếu thật sự cần |
 | R6 | **Grain / mưa / bụi làm file phình to.** Noise khó nén → 3 tiếng 1080p có thể **10–16GB**, 4K gấp ~4 lần, và YouTube nén lại thì grain cũng nát | Trung bình | Hiện ước tính dung lượng; preset quality; khuyến nghị grain ≤ 15% |
 | R7 | **Preview khác bản render** | Trung bình | Dùng chung shader GLSL cho WebGL preview và moderngl render; có render thử 30s |
+| R9 | **Footage overlay.** (a) Bản quyền: nhiều pack "free" cấm dùng thương mại — kênh có kiếm tiền phải kiểm tra license. (b) File alpha (.mov ProRes 4444) rất nặng, hàng GB cho vài chục giây. (c) Overlay video full khung phải decode mỗi frame → render chậm thêm, nhất là 4K | Trung bình | App không kèm footage; ưu tiên footage nền đen + Screen (file nhẹ); render thử 30s để đo |
 | R8 | **Phình phạm vi.** 4 module + 9 visualizer + 11 effect + preset là khối lượng lớn | **Cao** | Bám roadmap. Chưa xong P1 thì không làm P2 |
 
 ---
@@ -376,5 +396,6 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 - [ ] Các bài nghe đều âm lượng (±1 LU so với -14 LUFS), không clip ở vùng crossfade.
 - [ ] Render MP4 16:9 nền ảnh dọc 9:16 (blur fill) + Preset B + Circular Radial Bars + Now Playing → video chạy hết 2h45m, tên bài đổi đúng thời điểm, nền loop không giật.
 - [ ] Tab Video: mọi element (tên playlist, phụ đề, Now Playing, logo, visualizer, từng effect, artwork, nền, audio) hiện trên timeline; click trên canvas chọn đúng track; kéo đổi vị trí; đổi thời gian hiển thị tên playlist bằng kéo thanh; nút "Xem chỗ nối loop" phát đúng điểm nối.
+- [ ] Thêm overlay `rain_on_glass.mp4` (Screen 45%) + gradient đáy + khung film PNG; overlay video lặp suốt video, chỗ nối clip không giật; vòng loop nền vẫn giữ 60s.
 - [ ] Tắt app giữa chừng lúc render 60% → mở lại → resume, không render lại từ đầu.
 - [ ] `chapters.txt` dán vào YouTube nhận đúng chapters.
