@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+# Node
+node_modules/
+frontend/dist/
+# Bundled binaries & runtime data
+backend/bin/
+bench/ffmpeg/
+bench/work/
+bench/results/
+*.zip
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
