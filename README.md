@@ -1,14 +1,24 @@
 # YT Music Editor
 
-App local (Windows) để sản xuất video playlist nhạc dài 1–3 tiếng: lấy audio từ file/link → xuất MP3 → ghép mix với transition → render MP4 có effect, sóng nhạc, tên bài.
+App local (Windows) để sản xuất video playlist nhạc dài 1–3 tiếng: lấy audio từ file/link → xuất MP3 → ghép mix với transition → render MP4 có overlay, effect, sóng nhạc, tên bài.
 
-> Trạng thái: **giai đoạn thiết kế** — chưa có code ứng dụng.
+> Trạng thái: **thiết kế xong, chưa có code**. Việc tiếp theo: **M0 — Spike S1** (benchmark render).
 
-## Tài liệu
+## Bắt đầu từ đâu
 
-| File | Nội dung |
-|---|---|
-| [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Requirement chi tiết, quyết định đã chốt, giả định cần xác nhận, kiến trúc, rủi ro, roadmap |
-| [`docs/UI-UX.md`](docs/UI-UX.md) | Thiết kế UI/UX: nguyên tắc, layout từng màn hình, hành vi, phím tắt, visual style |
-| [`docs/ui-mockup.html`](docs/ui-mockup.html) | Mockup tương tác — mở bằng trình duyệt, không cần cài gì |
-| [`docs/visual-effects-reference.md`](docs/visual-effects-reference.md) | Thư viện effect và preset style (tham chiếu) |
+**Developer mới:** đọc theo thứ tự 1 → 2 → 3.
+
+| # | File | Nội dung |
+|---|---|---|
+| 1 | [`docs/PROJECT-OVERVIEW.md`](docs/PROJECT-OVERVIEW.md) | Dự án là gì, vai trò, kiến trúc tóm tắt, phạm vi, roadmap, rủi ro |
+| 2 | [`docs/CODING-GUIDE.md`](docs/CODING-GUIDE.md) | Stack, cấu trúc repo, data model, quy tắc kỹ thuật, test, milestone, quy trình PR/QA |
+| 3 | [`docs/REQUIREMENTS.md`](docs/REQUIREMENTS.md) | Requirement chi tiết có ID — nguồn sự thật về chức năng |
+| 4 | [`docs/UI-UX.md`](docs/UI-UX.md) | Spec từng màn hình |
+| 5 | [`docs/ui-mockup.html`](docs/ui-mockup.html) | Mockup tương tác — mở bằng trình duyệt |
+| 6 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Nhật ký quyết định |
+| 7 | [`docs/visual-effects-reference.md`](docs/visual-effects-reference.md) | Thư viện effect & preset style |
+
+## Vai trò
+- **Product Owner:** chủ dự án — phạm vi, ưu tiên, merge PR
+- **Orchestrator & QA:** Claude — tài liệu, chia task, review mọi PR
+- **Developer:** code + test theo `CODING-GUIDE.md`, mở PR theo template
