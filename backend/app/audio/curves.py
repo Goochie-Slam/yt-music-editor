@@ -33,7 +33,7 @@ def gain_in(curve: Curve, x: float) -> float:
         case Curve.LINEAR:
             return x
         case Curve.LOG:
-            return x**LOG_EXPONENT
+            return math.pow(x, LOG_EXPONENT)
         case Curve.S_CURVE:
             return (1 - math.cos(math.pi * x)) / 2
 

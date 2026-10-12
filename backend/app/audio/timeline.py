@@ -88,6 +88,9 @@ def format_timestamp(sec: float, force_hours: bool) -> str:
 
 def chapters_text(chapters: list[float], titles: list[str], total: float) -> str:
     hours = total >= 3600
-    return "\n".join(
-        f"{format_timestamp(c, hours)} {t}" for c, t in zip(chapters, titles, strict=True)
-    ) + "\n"
+    return (
+        "\n".join(
+            f"{format_timestamp(c, hours)} {t}" for c, t in zip(chapters, titles, strict=True)
+        )
+        + "\n"
+    )

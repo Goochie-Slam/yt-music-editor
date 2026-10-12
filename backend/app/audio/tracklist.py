@@ -8,7 +8,7 @@ from enum import StrEnum
 
 # Optional bracket around the time, then an optional dash / pipe separator before the title.
 _LINE = re.compile(
-    r"^\s*[\[(]?(?:(?P<h>\d{1,2}):)?(?P<m>\d{1,2}):(?P<s>\d{2})[\])]?\s*(?:[-–—|:]\s*)?(?P<title>.+?)\s*$"
+    r"^\s*[\[(]?(?:(?P<h>\d{1,2}):)?(?P<m>\d{1,2}):(?P<s>\d{2})[\])]?\s*(?:[-–—|:]\s*)?(?P<title>.+?)\s*$"  # noqa: RUF001 — users paste en/em dashes
 )
 
 
