@@ -1,6 +1,6 @@
 # YT Music Editor — Requirements v0.1
 
-> Trạng thái: **Draft — chờ anh review**
+> Trạng thái: **Draft v0.2 — đã cập nhật theo feedback lần 1**
 > Ngày: 2026-10-12
 > Tài liệu liên quan: [`UI-UX.md`](./UI-UX.md) · [`ui-mockup.html`](./ui-mockup.html) · [`visual-effects-reference.md`](./visual-effects-reference.md)
 
@@ -38,6 +38,10 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 | 13 | Tên bài + timestamp | Có, **optional** (bật/tắt riêng) |
 | 14 | Độ dài | Mix 1–3 tiếng |
 | 15–17 | Nền tảng | Local only · Windows · Web app local (Python + FFmpeg backend, UI trên trình duyệt) |
+| 18 | GPU | **NVIDIA RTX 3050** → dùng NVENC để encode |
+| 19 | Cắt tracklist | Có — cắt 1 file dài thành nhiều bài **rồi mix lại** |
+| 20 | Độ phân giải | **1080p mặc định**; 1440p (2K) và 2160p (4K) là tùy chọn |
+| 21 | Tab Video | Hiển thị **mọi element** tạo thành video trên timeline layer (gồm cả vòng loop), element nào cũng chọn và chỉnh được |
 
 ---
 
@@ -45,11 +49,11 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 
 | ID | Giả định của em | Nếu sai thì sao |
 |---|---|---|
-| A1 | "Tách theo list" gồm **2 việc**: (a) chuyển nhiều file/link sang MP3, (b) **cắt 1 file dài thành nhiều bài theo tracklist** (dán `00:00 Bài A`…) | Nếu không cần (b) thì bỏ module cắt tracklist, tiết kiệm công |
+| ~~A1~~ | ✅ Đã xác nhận: cần cắt theo tracklist, sau đó mix lại | — |
 | A2 | Link playlist (YouTube playlist, SoundCloud set) → app liệt kê bài, user tick chọn bài cần lấy | — |
 | A3 | Tên bài hiển thị lấy từ **tên file / tiêu đề link**, user sửa được **trong app** (không ghi vào tag MP3) | — |
-| A4 | Output video: **1080p**, 30fps mặc định (có 60fps); 4K để Phase 3 | 4K render chậm ~4 lần, file nặng ~3–4 lần |
-| A5 | Máy anh có **GPU rời** (NVIDIA / AMD) hoặc Intel iGPU đời mới | Không có GPU thì render 3 tiếng có thể mất **vài tiếng** — xem R2 |
+| ~~A4~~ | ✅ 1080p mặc định, 1440p / 4K tùy chọn, 30fps mặc định (có 60fps) | — |
+| A5 | RTX 3050 là bản **desktop 8GB**. Nếu là bản **laptop 4GB** thì 4K có thể thiếu VRAM khi render effect | Bản laptop: 4K chỉ ổn ở 30fps, ít effect. Spike S1 sẽ đo |
 | A6 | UI tiếng Việt, hỗ trợ font có dấu tiếng Việt cho chữ trên video | — |
 
 ---
@@ -66,12 +70,14 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 | F1.2 | Dán **1 hoặc nhiều link** (mỗi dòng 1 link): YouTube, SoundCloud, Mixcloud và các site [yt-dlp hỗ trợ](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md). Link playlist → hiện danh sách bài để tick chọn | P1 |
 | F1.3 | Mỗi item hiển thị: tên, nguồn, định dạng, thời lượng, bitrate nguồn, trạng thái (đang tải / đang xử lý / xong / lỗi + lý do) | P1 |
 | F1.4 | Tick chọn item → **Xuất MP3 320kbps CBR** hàng loạt vào folder chọn. Pattern tên file: `{index} - {title}.mp3` (sửa được) | P1 |
-| F1.5 | **Cắt theo tracklist:** chọn 1 file dài + dán tracklist dạng `mm:ss Tên` hoặc `hh:mm:ss Tên` → preview danh sách đoạn → xuất mỗi đoạn 1 MP3 | P1 |
+| F1.5 | **Cắt theo tracklist:** chọn 1 file dài (local hoặc link Mixcloud/YouTube) + dán tracklist dạng `mm:ss Tên` hoặc `hh:mm:ss Tên` → preview danh sách đoạn, báo lỗi từng dòng → **"Cắt & thêm vào Mix"** (mặc định) hoặc "Chỉ xuất MP3" | P1 |
+| F1.5b | Đoạn cắt tự vào Thư viện với tên lấy từ tracklist, có thể tinh chỉnh điểm cắt (± vài giây) bằng trim ở tab Mix | P1 |
 | F1.6 | Nút "Thêm vào Mix" cho item đã chọn | P1 |
 | F1.7 | Chạy song song tối đa N tác vụ (mặc định 3), có hủy | P1 |
 | F1.8 | Cảnh báo khi bitrate nguồn thấp (ví dụ YouTube ~128–160kbps): *"Xuất 320kbps không làm chất lượng tốt hơn nguồn"* | P1 |
 | F1.9 | Nút **cập nhật yt-dlp** trong Settings (YouTube đổi hệ thống liên tục, yt-dlp cũ sẽ hỏng) | P1 |
 | F1.10 | Cache: file đã tải/đã decode không xử lý lại | P1 |
+| F1.11 | **Không nén lossy nhiều lần:** mọi xử lý nội bộ (cắt, normalize, mix) dùng bản decode **lossless (WAV)** trong cache. MP3 chỉ được tạo ở bước xuất cuối. Cắt → MP3 → mix → MP3 lại là nén lossy 2–3 lần, nghe sẽ tệ dần | P1 |
 
 **Ngoài phạm vi:** vượt DRM, tải nội dung trả phí, đăng nhập tài khoản nền tảng.
 
@@ -151,6 +157,38 @@ Bài N+1        ░░▒▒▓▓███████         Bài N+1        
 
 ### M3. Video
 
+#### 3.0 Mô hình element & Timeline layer
+
+Video = **chồng các element**. Mọi element đều hiện trên timeline, chọn được và chỉnh được — không có thành phần "ẩn" nào được render mà user không thấy.
+
+| Nhóm | Element | Chỉnh được |
+|---|---|---|
+| Chữ & hình | **Now Playing** (1 đoạn / bài, tự sinh từ Mix) | format, font, cỡ, màu, animation, vị trí; **sửa tên từng bài** bằng cách click đoạn tương ứng |
+| | **Tên playlist**, **Phụ đề**, Text thêm | nội dung, font, độ đậm, cỡ, màu, shadow, animation, vị trí, **thời gian hiển thị** |
+| | **Logo kênh**, Ảnh thêm | file, kích thước, opacity, vị trí, thời gian hiển thị |
+| Visualizer | Visualizer | loại / style, màu, kích thước, độ nhạy, opacity, vị trí |
+| Effect | **Mỗi effect đang bật = 1 track** | bật/tắt, tham số, chu kỳ loop |
+| Hình nền | **Artwork** (ảnh / carousel / video loop) | media, kích thước, bo góc, đổ bóng, viền, vị trí |
+| | **Nền** (phần lấp khi artwork khác tỉ lệ) | Blur fill / Solid color / Crop fill, blur, độ tối; **thông tin vòng loop** |
+| Audio | Mix audio (chỉ xem) | link sang tab Mix |
+
+| ID | Requirement | Ưu tiên |
+|---|---|---|
+| F3.38 | **Timeline layer** dưới canvas, hiển thị toàn bộ element theo nhóm như bảng trên, trục thời gian = toàn bộ mix | P1 |
+| F3.39 | Zoom timeline: Toàn bộ / 10 phút / 2 phút; cuộn ngang; playhead đồng bộ với preview. Click thước thời gian hoặc vùng trống để tua | P1 |
+| F3.40 | **Chọn đồng bộ 3 chiều:** click element trên canvas ↔ track trên timeline ↔ Inspector bên phải luôn chỉ cùng 1 element. Canvas hiện khung chọn + tên element | P1 |
+| F3.41 | Kéo element trên canvas để đổi vị trí; ô X/Y (%) trong Inspector đồng bộ 2 chiều | P1 |
+| F3.42 | Text / ảnh: **kéo 2 đầu thanh** trên timeline để đổi thời gian hiển thị, kéo giữa để dời. Có ô nhập giờ chính xác + tùy chọn "Đến hết video" | P1 |
+| F3.43 | Mắt ◉/○ trên mỗi track để ẩn/hiện tạm thời (không xóa cấu hình) | P1 |
+| F3.44 | **Hiển thị loop:** track Nền vẽ vạch tại mỗi điểm lặp và ghi rõ "LOOP 60s × 154 — render 1 lần rồi lặp". Track effect ghi chu kỳ loop của effect. Video nền hiện vạch tại mỗi lần lặp clip | P1 |
+| F3.45 | Nút **"Xem chỗ nối loop"**: nhảy tới 3s trước điểm nối gần nhất và phát, để kiểm tra có giật không | P1 |
+| F3.46 | Khi nền là carousel / video (không loop được) → track Nền và Inspector cảnh báo "render toàn bộ, chậm hơn" | P1 |
+| F3.47 | Carousel đổi theo bài: track Artwork hiện từng ảnh khớp với từng bài | P1 |
+| F3.48 | Thêm element: **＋ Text**, **＋ Ảnh / Logo** (nhiều cái), ＋ Effect, ＋ Visualizer (MVP: 1 visualizer / video). Element thêm xóa được; element mặc định chỉ ẩn được | P1 |
+| F3.49 | Vị trí element lưu **riêng cho 16:9 và 9:16** — chỉnh khung này không làm hỏng khung kia | P1 |
+| F3.50 | Thứ tự track = thứ tự chồng lớp; kéo header track để đổi thứ tự trong nhóm Chữ & hình | P2 |
+| F3.51 | Keyframe animation cho element (bay vào, đổi vị trí theo thời gian) | **Ngoài phạm vi** — đây là video editor tổng quát, không phải mục tiêu |
+
 #### 3.1 Canvas & khung hình
 
 | ID | Requirement | Ưu tiên |
@@ -166,7 +204,8 @@ Bài N+1        ░░▒▒▓▓███████         Bài N+1        
 | F3.4 | **Ảnh tĩnh**: 1 ảnh | P1 |
 | F3.5 | **Carousel**: nhiều ảnh, đổi theo (a) mỗi X giây, hoặc (b) **theo bài** (đổi ảnh lúc đổi bài). Chuyển ảnh crossfade 1–3s | P1 |
 | F3.6 | **Video loop**: 1 video lặp suốt mix. Tùy chọn crossfade ở điểm loop (0.5–2s) để giấu chỗ nối | P1 |
-| F3.7 | **Fit mode** khi nguồn khác tỉ lệ output: `Blur fill` (nền = chính ảnh đó phóng to + blur + tối đi) · `Solid color` (chọn màu) · `Crop fill` (phóng to cắt cho đầy) | P1 |
+| F3.7 | **Fit mode** khi nguồn khác tỉ lệ output: `Blur fill` (nền = chính ảnh đó phóng to + blur + tối đi) · `Solid color` (chọn màu) · `Crop fill` (phóng to cắt cho đầy). Artwork và Nền là **2 element riêng** — artwork thu nhỏ / dời được, nền tự lấp phần còn lại | P1 |
+| F3.7b | Artwork: kích thước 40–150%, bo góc, đổ bóng, viền | P1 |
 | F3.8 | Fit mode áp dụng cho cả ảnh, từng ảnh carousel và video | P1 |
 | F3.9 | Chỉnh độ blur (0–60) và độ tối (0–80%) cho Blur fill | P1 |
 
@@ -230,8 +269,8 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 
 | ID | Requirement | Ưu tiên |
 |---|---|---|
-| F4.1 | Cài đặt output: khung hình (16:9 / 9:16 / cả hai), 1080p, 30/60fps, chất lượng (Nhẹ / Cân bằng / Cao) | P1 |
-| F4.2 | Encoder: **tự phát hiện** GPU encoder (NVENC / AMF / QSV), fallback CPU (x264). H.264 + AAC 320kbps | P1 |
+| F4.1 | Cài đặt output: khung hình (16:9 / 9:16 / cả hai), **độ phân giải 1080p (mặc định) / 1440p / 2160p**, 30/60fps, chất lượng (Nhẹ / Cân bằng / Cao). Chọn 1440p/4K → hiện ước tính thời gian & dung lượng tăng | P1 |
+| F4.2 | Encoder: **tự phát hiện** GPU encoder (NVENC trên RTX 3050; AMF / QSV cho máy khác), fallback CPU (x264). H.264 + AAC 320kbps | P1 |
 | F4.3 | **Render thử 30 giây** ở vị trí bất kỳ → xem kết quả thật trước khi render dài | P1 |
 | F4.4 | Ước tính trước khi render: dung lượng file, thời gian render (từ benchmark render thử) | P1 |
 | F4.5 | **Hàng đợi render**: nhiều job, progress %, ETA, hủy, mở folder output | P1 |
@@ -259,7 +298,7 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 |---|---|---|
 | N1 | Hệ điều hành | Windows 10/11 64-bit. Bản portable: giải nén → chạy `Start.bat` → tự mở trình duyệt. Đã bundle Python, FFmpeg, yt-dlp |
 | N2 | Offline | Mọi chức năng trừ tải link đều chạy offline |
-| N3 | **Tốc độ render** (1080p30, nền ảnh + 2–3 effect + visualizer) | Có GPU: **≥ 2× realtime** (mix 3 tiếng ≤ 90 phút). Chỉ CPU: ≥ 0.7× realtime. *Con số sẽ được đo ở Spike S1 rồi chốt lại* |
+| N3 | **Tốc độ render** trên RTX 3050 (nền ảnh + 2–3 effect + visualizer, 30fps) | 1080p: **≥ 2× realtime** (mix 3 tiếng ≤ 90 phút) · 1440p: ≥ 1.1× · 4K: ≥ 0.5× (mix 3 tiếng ≈ 6 tiếng). *Chưa đo — Spike S1 sẽ chốt* |
 | N4 | Xuất mix MP3 3 tiếng (đã có cache normalize) | ≤ 5 phút |
 | N5 | UI mượt với 100 bài trong mix | Kéo thả không lag, mở Transition Editor < 300ms |
 | N6 | Preview ↔ render | Preview trên canvas **giống bản render** (cùng shader). Sai khác chấp nhận: chất lượng preview thấp hơn khi máy yếu |
@@ -308,11 +347,11 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 | ID | Rủi ro | Mức | Giảm thiểu |
 |---|---|---|---|
 | R1 | **Bản quyền / Content ID.** Video mix nhạc người khác đăng YouTube rất dễ bị claim, mất kiếm tiền, bị strike. Tải từ YouTube/SoundCloud/Mixcloud vi phạm ToS của các nền tảng đó. Tool không giải quyết được chuyện này | **Cao** (với kênh) | Ngoài phạm vi kỹ thuật. Anh cần chiến lược nguồn nhạc riêng (nhạc có license, royalty-free, nhạc tự sản xuất / AI có quyền thương mại) |
-| R2 | **Render chậm.** 3 tiếng × 30fps = 324.000 frame. Máy không có GPU tốt có thể render mất vài tiếng | Cao | Loop nền (mục 5.3), GPU encode, chunk + resume, render thử 30s để đo. **Spike S1 làm đầu tiên** |
+| R2 | **Render chậm.** 3 tiếng × 30fps = 324.000 frame. RTX 3050 có NVENC nên khâu **encode không phải nút thắt**. Nút thắt là khâu vẽ effect + visualizer từng frame và chép frame từ GPU về. 4K = gấp 4 lần số pixel → mix 3 tiếng có thể mất ~6 tiếng | Cao | Loop nền (mục 5.3), chunk + resume, render thử 30s để đo. **Spike S1 làm đầu tiên** |
 | R3 | **yt-dlp hỏng** khi YouTube đổi hệ thống (vài lần/năm) | Trung bình | Nút cập nhật yt-dlp; tải link tách hẳn khỏi phần còn lại |
 | R4 | **Chất lượng nguồn từ link** ~128–160kbps. Đổi sang MP3 320kbps chỉ làm file nặng hơn, **không** hay hơn | Trung bình | Cảnh báo F1.8. Ưu tiên file gốc chất lượng cao khi có |
 | R5 | **Parallax 2.5D** cần model AI tách depth + inpaint. Kết quả hay lỗi méo mặt / viền cắt — đúng thứ guideline bảo tránh | Cao | Đẩy xuống P3, chỉ làm nếu thật sự cần |
-| R6 | **Grain / mưa / bụi làm file phình to.** Noise khó nén → 3 tiếng 1080p có thể **10–16GB**, và YouTube nén lại thì grain cũng nát | Trung bình | Hiện ước tính dung lượng; preset quality; khuyến nghị grain ≤ 15% |
+| R6 | **Grain / mưa / bụi làm file phình to.** Noise khó nén → 3 tiếng 1080p có thể **10–16GB**, 4K gấp ~4 lần, và YouTube nén lại thì grain cũng nát | Trung bình | Hiện ước tính dung lượng; preset quality; khuyến nghị grain ≤ 15% |
 | R7 | **Preview khác bản render** | Trung bình | Dùng chung shader GLSL cho WebGL preview và moderngl render; có render thử 30s |
 | R8 | **Phình phạm vi.** 4 module + 9 visualizer + 11 effect + preset là khối lượng lớn | **Cao** | Bám roadmap. Chưa xong P1 thì không làm P2 |
 
@@ -322,19 +361,20 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 
 | Giai đoạn | Nội dung | Kết quả |
 |---|---|---|
-| **Spike S1** | Benchmark render 10 phút 1080p (ảnh + zoom + grain + bars) với moderngl + NVENC/x264 trên Windows | Chốt kiến trúc render và con số N3. **Nếu không đạt thì đổi hướng trước khi viết UI** |
-| **Phase 1 (MVP)** | M1 toàn bộ · M2 toàn bộ P1 · M3: ảnh / carousel / video + fit mode, 6 effect P1, 9 visualizer, Now Playing / tiêu đề / logo · M4 P1 · M5 P1 | Làm được video mix 3 tiếng hoàn chỉnh từ đầu đến cuối |
+| **Spike S1** | Benchmark render 10 phút ở 1080p / 1440p / 4K (ảnh + zoom + grain + circular visualizer) với moderngl + NVENC trên **máy RTX 3050 của anh** | Chốt kiến trúc render và con số N3. **Nếu không đạt thì đổi hướng trước khi viết UI** |
+| **Phase 1 (MVP)** | M1 toàn bộ (gồm cắt tracklist → mix) · M2 toàn bộ P1 · M3: **timeline layer + element**, artwork ảnh / carousel / video + fit mode, 6 effect P1, 9 visualizer, Now Playing / tên playlist / text / logo · M4 P1 (1080p / 1440p / 4K) · M5 P1 | Làm được video mix 3 tiếng hoàn chỉnh từ đầu đến cuối |
 | **Phase 2** | VHS, Fog, Rain, Custom Overlay, phản ứng theo bass, progress bar, safe area, gain từng bài, template project, thông báo | Đa dạng style |
-| **Phase 3** | Parallax 2.5D, 4K, shuffle / sắp xếp thông minh | Tùy nhu cầu thật |
+| **Phase 3** | Parallax 2.5D, shuffle / sắp xếp thông minh | Tùy nhu cầu thật |
 
 ---
 
 ## 8. Acceptance Criteria cho MVP
 
 - [ ] Dán 1 playlist YouTube 20 bài + kéo 10 file local (mkv, flac, m4a) → tick 25 bài → xuất 25 MP3 320kbps, không lỗi.
-- [ ] Cắt 1 file mix 2 tiếng theo tracklist 30 dòng → 30 MP3 đúng mốc (sai số ≤ 0.1s).
+- [ ] Cắt 1 file mix 2 tiếng theo tracklist 30 dòng → 30 đoạn đúng mốc (sai số ≤ 0.1s) → "Cắt & thêm vào Mix" → mix lại với transition mới, không qua MP3 trung gian.
 - [ ] Mix 40 bài (~2h45m), mỗi điểm nối một preset khác nhau, chỉnh tay 3 điểm, lưu 1 preset mới → nghe thử từng điểm nối ngay trong UI.
 - [ ] Các bài nghe đều âm lượng (±1 LU so với -14 LUFS), không clip ở vùng crossfade.
 - [ ] Render MP4 16:9 nền ảnh dọc 9:16 (blur fill) + Preset B + Circular Radial Bars + Now Playing → video chạy hết 2h45m, tên bài đổi đúng thời điểm, nền loop không giật.
+- [ ] Tab Video: mọi element (tên playlist, phụ đề, Now Playing, logo, visualizer, từng effect, artwork, nền, audio) hiện trên timeline; click trên canvas chọn đúng track; kéo đổi vị trí; đổi thời gian hiển thị tên playlist bằng kéo thanh; nút "Xem chỗ nối loop" phát đúng điểm nối.
 - [ ] Tắt app giữa chừng lúc render 60% → mở lại → resume, không render lại từ đầu.
 - [ ] `chapters.txt` dán vào YouTube nhận đúng chapters.
