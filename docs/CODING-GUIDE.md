@@ -146,7 +146,7 @@ cd backend && uv sync && uv run uvicorn app.main:create_app --factory --host 127
 # frontend (dev, proxy /api → 8765)
 cd frontend && npm ci && npm run dev
 # kiểm tra trước khi mở PR
-cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy app && uv run pytest
+cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run mypy --platform win32 && uv run pytest
 cd frontend && npm run lint && npm run typecheck && npm test
 # sinh lại schema + TS types sau khi sửa models/
 cd backend && uv run python -m app.models.export_schema && cd ../frontend && npm run gen:types

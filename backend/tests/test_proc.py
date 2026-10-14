@@ -14,7 +14,9 @@ def test_passes_tricky_paths_untouched(tmp_path: Path) -> None:
     weird = tmp_path / "Bài hát & thử (1) 'x'.txt"
     weird.write_text("xin chào", encoding="utf-8")
     # Write UTF-8 bytes explicitly: a piped child's stdout is cp1252 on Windows, not UTF-8.
-    code = "import sys; sys.stdout.buffer.write(open(sys.argv[1], encoding='utf-8').read().encode())"
+    code = (
+        "import sys; sys.stdout.buffer.write(open(sys.argv[1], encoding='utf-8').read().encode())"
+    )
     r = proc.run([PY, "-c", code, weird])
     assert r.ok
     assert r.stdout.decode("utf-8").strip() == "xin chào"
