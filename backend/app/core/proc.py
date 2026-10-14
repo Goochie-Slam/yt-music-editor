@@ -12,6 +12,7 @@ import logging
 import os
 import signal
 import subprocess
+import sys
 import threading
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
@@ -42,8 +43,9 @@ class ProcResult:
         return self.stderr.decode("utf-8", errors="replace")[-limit:]
 
 
+# Branch on sys.platform (not os.name): mypy only narrows platform-specific APIs on sys.platform.
 def _popen(args: list[str], cwd: Path | None) -> subprocess.Popen[bytes]:
-    if os.name == "nt":
+    if sys.platform == "win32":
         return subprocess.Popen(
             args,
             cwd=cwd,
@@ -65,7 +67,7 @@ def _popen(args: list[str], cwd: Path | None) -> subprocess.Popen[bytes]:
 def kill_tree(proc: subprocess.Popen[bytes]) -> None:
     if proc.poll() is not None:
         return
-    if os.name == "nt":
+    if sys.platform == "win32":
         subprocess.run(
             ["taskkill", "/F", "/T", "/PID", str(proc.pid)],
             capture_output=True,

@@ -52,7 +52,8 @@ def test_save_roundtrip_and_backups(client: TestClient, projects_dir: Path) -> N
     }
     saved = client.put(f"/api/projects/{pid}", json=proj)
     assert saved.status_code == 200, saved.text
-    assert saved.json()["updatedAt"] > proj["updatedAt"]
+    # >= : Windows' system clock can return the same timestamp for back-to-back calls
+    assert saved.json()["updatedAt"] >= proj["updatedAt"]
     again = client.get(f"/api/projects/{pid}").json()
     assert again["mix"]["tracks"][0]["title"] == "Bài 1"
     assert again["mix"]["transitions"]["t1>t2"]["overlap"] == -1.5
