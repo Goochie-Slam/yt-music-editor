@@ -44,12 +44,19 @@ def gain_out(curve: Curve, x: float) -> float:
 
 FIXTURE = Path(__file__).resolve().parents[3] / "shared" / "fixtures" / "curves.json"
 FIXTURE_POINTS = 101
+# libm differs in the last bit between Windows and Linux; rounding keeps the file byte-identical
+# on both (CI checks it is up to date). Tests compare with a 1e-6 tolerance anyway.
+FIXTURE_DIGITS = 12
 
 
 def fixture_data() -> dict[str, dict[str, list[float]]]:
     xs = [i / (FIXTURE_POINTS - 1) for i in range(FIXTURE_POINTS)]
+    r = FIXTURE_DIGITS
     return {
-        c.value: {"in": [gain_in(c, x) for x in xs], "out": [gain_out(c, x) for x in xs]}
+        c.value: {
+            "in": [round(gain_in(c, x), r) for x in xs],
+            "out": [round(gain_out(c, x), r) for x in xs],
+        }
         for c in Curve
     }
 
