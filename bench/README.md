@@ -14,7 +14,7 @@ Script render một cảnh giống app thật: artwork dọc trên nền blur, s
 |---|---|---|---|
 | 1 | Windows 10 / 11 64-bit | — | |
 | 2 | **Driver NVIDIA mới nhất** | [nvidia.com/drivers](https://www.nvidia.com/Download/index.aspx) hoặc app NVIDIA | Driver cũ có thể làm NVENC không chạy |
-| 3 | **Python 3.12** | [python.org/downloads](https://www.python.org/downloads/) → bản 3.12.x | Khi cài **phải tick "Add python.exe to PATH"** |
+| 3 | **Python 3.12** | [python.org/downloads](https://www.python.org/downloads/) → bản 3.12.x, **hoặc** Microsoft Store → "Python 3.12" | python.org: **phải tick "Add python.exe to PATH"**. Microsoft Store: tự có PATH, không cần làm gì |
 | 4 | Mã nguồn dự án | Tải ZIP ([link ở bước 2.1](#21-tải-mã-nguồn)) | |
 | 5 | Kết nối Internet | — | Chỉ cần lần chạy đầu |
 | 6 | Ổ đĩa trống **≥ 3 GB** | — | FFmpeg, thư viện Python, file video tạm |
@@ -70,7 +70,7 @@ Script render một cảnh giống app thật: artwork dọc trên nền blur, s
 
 | Hiện tượng | Cách xử lý |
 |---|---|
-| `[!] Can cai Python 3.12` | Cài Python 3.12, nhớ tick *Add python.exe to PATH*. Nếu đã cài mà vẫn báo: *Settings → Apps → Advanced app settings → App execution aliases* → **tắt** 2 dòng `python.exe` / `python3.exe` của Microsoft Store |
+| `[!] Can cai Python 3.12` | Mở Command Prompt **mới**, gõ `python --version`. **Cài từ Microsoft Store:** vào *Settings → Apps → Advanced app settings → App execution aliases* → **bật ON** `python.exe` / `python3.exe`; nếu vẫn lỗi, thêm `%LOCALAPPDATA%\Microsoft\WindowsApps` vào PATH. **Cài từ python.org:** cài lại và tick *Add python.exe to PATH*; nếu `python` mở ra Microsoft Store thì **tắt** 2 alias trên |
 | `[!] Tai FFmpeg that bai` | Tải tay `ffmpeg-release-essentials.zip` từ [gyan.dev/ffmpeg/builds](https://www.gyan.dev/ffmpeg/builds/), giải nén, đổi tên thư mục bên trong thành `ffmpeg` và đặt vào `C:\ytme\bench\` (sao cho có `C:\ytme\bench\ffmpeg\bin\ffmpeg.exe`) |
 | GPU hiện Intel / llvmpipe | Làm lại bước laptop ở 2.2 |
 | Một cấu hình báo `LỖI: …` | Không sao — script vẫn chạy tiếp các cấu hình khác. Cứ gửi kết quả, lỗi cũng được ghi vào file |
