@@ -1,0 +1,38 @@
+{
+  "name": "ytme-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p . && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit -p .",
+    "lint": "eslint . && prettier --check \"src/**/*.{ts,tsx,css,json}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
+    "test": "vitest run",
+    "gen:types": "json2ts -i ../shared/schema/project.schema.json -o src/api/types.gen.ts --unreachableDefinitions --additionalProperties false --bannerComment \"/* Generated from shared/schema/project.schema.json by: npm run gen:types. Do not edit. */\""
+  },
+  "dependencies": {
+    "immer": "^10.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^4.7.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^15.15.0",
+    "jsdom": "^25.0.1",
+    "json-schema-to-typescript": "^15.0.4",
+    "prettier": "^3.9.10",
+    "typescript": "~5.6.3",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9"
+  }
+}

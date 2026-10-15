@@ -1,0 +1,56 @@
+{
+  "app": { "name": "YT Music Editor" },
+  "steps": { "library": "Thư viện", "mix": "Mix", "video": "Video", "export": "Xuất" },
+  "save": {
+    "saved": "✓ Đã lưu",
+    "saving": "Đang lưu…",
+    "dirty": "Chưa lưu",
+    "error": "⚠ Lỗi lưu — {message}"
+  },
+  "top": {
+    "undo": "Hoàn tác (Ctrl+Z)",
+    "redo": "Làm lại (Ctrl+Shift+Z)",
+    "queue": "Tác vụ đang chạy",
+    "settings": "Cài đặt",
+    "close": "Đóng project",
+    "rename": "Đổi tên project"
+  },
+  "home": {
+    "title": "YT Music Editor",
+    "create": "Tạo project mới",
+    "name": "Tên project",
+    "namePlaceholder": "Ví dụ: Chill Night Mix",
+    "parent": "Lưu trong thư mục",
+    "createBtn": "Tạo project",
+    "open": "Mở project có sẵn",
+    "openPath": "Đường dẫn thư mục project (hoặc file project.json)",
+    "openBtn": "Mở",
+    "recent": "Gần đây",
+    "noRecent": "Chưa có project nào."
+  },
+  "placeholder": {
+    "library": "Lấy audio từ file / link, cắt tracklist, xuất MP3 hàng loạt.",
+    "mix": "Sắp xếp bài, transition, normalize, nghe thử, xuất mix.",
+    "video": "Canvas + timeline layer: artwork, overlay, effect, visualizer, chữ.",
+    "export": "Render MP4 1080p / 1440p / 4K, hàng đợi, resume.",
+    "milestone": "Đang xây dựng — {milestone}"
+  },
+  "settings": {
+    "title": "Cài đặt & hệ thống",
+    "version": "Phiên bản app",
+    "dataDir": "Dữ liệu app",
+    "projectsDir": "Thư mục project",
+    "ffmpeg": "FFmpeg",
+    "encoders": "Encoder video",
+    "ytdlp": "yt-dlp",
+    "missing": "Không tìm thấy",
+    "nvencOk": "NVIDIA NVENC dùng được",
+    "nvencNo": "Không có NVENC — sẽ dùng CPU (x264, chậm hơn)",
+    "selftest": "Kiểm tra FFmpeg",
+    "selftestDone": "FFmpeg hoạt động bình thường.",
+    "cancel": "Hủy",
+    "close": "Đóng"
+  },
+  "conn": { "lost": "Mất kết nối với app — đang thử lại…" },
+  "errors": { "network": "Không kết nối được tới app. App có đang chạy không?" }
+}

@@ -1,0 +1,251 @@
+{
+  "system": {
+    "host": "DUYNHA",
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.15",
+    "cpu": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+    "cpu_count": 12,
+    "gl_renderer": "NVIDIA GeForce RTX 3050/PCIe/SSE2",
+    "gl_version": "3.3.0 NVIDIA 610.88",
+    "ffmpeg": "ffmpeg version 9.0.2-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+    "ram_gb": 31.8,
+    "nvidia": "NVIDIA GeForce RTX 3050, 6144 MiB, 610.88",
+    "nvenc": true,
+    "cuda_decode": true
+  },
+  "duration": 60,
+  "fps": 30,
+  "results": [
+    {
+      "config": "1080p-A-noov-nvenc-nv12",
+      "height": 1080,
+      "strategy": "A",
+      "overlay": false,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 8.01,
+      "fps": 224.6,
+      "x_realtime": 7.49,
+      "prerender_fps": null,
+      "projected_3h_min": 24.0,
+      "file_mb_per_min": 56.6,
+      "monitor": {
+        "gpu_util_avg": 24.9,
+        "vram_mb_max": 1657.0,
+        "cpu_util_avg": 48.0
+      },
+      "error": null
+    },
+    {
+      "config": "1080p-A-ov-nvenc-nv12",
+      "height": 1080,
+      "strategy": "A",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 12.64,
+      "fps": 142.4,
+      "x_realtime": 4.75,
+      "prerender_fps": null,
+      "projected_3h_min": 37.9,
+      "file_mb_per_min": 62.0,
+      "monitor": {
+        "gpu_util_avg": 26.4,
+        "vram_mb_max": 1976.0,
+        "cpu_util_avg": 56.6
+      },
+      "error": null
+    },
+    {
+      "config": "1080p-B-ov-nvenc-nv12",
+      "height": 1080,
+      "strategy": "B",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 16.15,
+      "fps": 111.5,
+      "x_realtime": 3.72,
+      "prerender_fps": 228.2,
+      "projected_3h_min": 48.6,
+      "file_mb_per_min": 63.4,
+      "monitor": {
+        "gpu_util_avg": 26.7,
+        "vram_mb_max": 2183.0,
+        "cpu_util_avg": 47.7
+      },
+      "error": null
+    },
+    {
+      "config": "1440p-A-noov-nvenc-nv12",
+      "height": 1440,
+      "strategy": "A",
+      "overlay": false,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 13.65,
+      "fps": 131.9,
+      "x_realtime": 4.4,
+      "prerender_fps": null,
+      "projected_3h_min": 40.9,
+      "file_mb_per_min": 99.1,
+      "monitor": {
+        "gpu_util_avg": 20.3,
+        "vram_mb_max": 1969.0,
+        "cpu_util_avg": 58.6
+      },
+      "error": null
+    },
+    {
+      "config": "1440p-A-ov-nvenc-nv12",
+      "height": 1440,
+      "strategy": "A",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 19.75,
+      "fps": 91.1,
+      "x_realtime": 3.04,
+      "prerender_fps": null,
+      "projected_3h_min": 59.2,
+      "file_mb_per_min": 109.6,
+      "monitor": {
+        "gpu_util_avg": 24.2,
+        "vram_mb_max": 2262.0,
+        "cpu_util_avg": 42.8
+      },
+      "error": null
+    },
+    {
+      "config": "1440p-B-ov-nvenc-nv12",
+      "height": 1440,
+      "strategy": "B",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 28.85,
+      "fps": 62.4,
+      "x_realtime": 2.08,
+      "prerender_fps": 132.1,
+      "projected_3h_min": 86.8,
+      "file_mb_per_min": 114.5,
+      "monitor": {
+        "gpu_util_avg": 24.8,
+        "vram_mb_max": 2550.0,
+        "cpu_util_avg": 47.9
+      },
+      "error": null
+    },
+    {
+      "config": "2160p-A-noov-nvenc-nv12",
+      "height": 2160,
+      "strategy": "A",
+      "overlay": false,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 30.44,
+      "fps": 59.1,
+      "x_realtime": 1.97,
+      "prerender_fps": null,
+      "projected_3h_min": 91.3,
+      "file_mb_per_min": 183.5,
+      "monitor": {
+        "gpu_util_avg": 18.4,
+        "vram_mb_max": 2364.0,
+        "cpu_util_avg": 59.3
+      },
+      "error": null
+    },
+    {
+      "config": "2160p-A-ov-nvenc-nv12",
+      "height": 2160,
+      "strategy": "A",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 61.91,
+      "fps": 29.1,
+      "x_realtime": 0.97,
+      "prerender_fps": null,
+      "projected_3h_min": 185.7,
+      "file_mb_per_min": 225.6,
+      "monitor": {
+        "gpu_util_avg": 17.0,
+        "vram_mb_max": 2885.0,
+        "cpu_util_avg": 41.7
+      },
+      "error": null
+    },
+    {
+      "config": "2160p-B-ov-nvenc-nv12",
+      "height": 2160,
+      "strategy": "B",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 88.6,
+      "fps": 20.3,
+      "x_realtime": 0.68,
+      "prerender_fps": 59.4,
+      "projected_3h_min": 266.3,
+      "file_mb_per_min": 238.2,
+      "monitor": {
+        "gpu_util_avg": 17.9,
+        "vram_mb_max": 3390.0,
+        "cpu_util_avg": 39.2
+      },
+      "error": null
+    },
+    {
+      "config": "1080p-A-ov-x264-nv12",
+      "height": 1080,
+      "strategy": "A",
+      "overlay": true,
+      "encoder": "x264",
+      "pix": "nv12",
+      "frames": 1800,
+      "seconds": 13.66,
+      "fps": 131.8,
+      "x_realtime": 4.39,
+      "prerender_fps": null,
+      "projected_3h_min": 41.0,
+      "file_mb_per_min": 79.2,
+      "monitor": {
+        "gpu_util_avg": 21.0,
+        "vram_mb_max": 2389.0,
+        "cpu_util_avg": 94.0
+      },
+      "error": null
+    },
+    {
+      "config": "1080p-A-ov-nvenc-rgba",
+      "height": 1080,
+      "strategy": "A",
+      "overlay": true,
+      "encoder": "nvenc",
+      "pix": "rgba",
+      "frames": 1800,
+      "seconds": 14.22,
+      "fps": 126.6,
+      "x_realtime": 4.22,
+      "prerender_fps": null,
+      "projected_3h_min": 42.7,
+      "file_mb_per_min": 59.9,
+      "monitor": {
+        "gpu_util_avg": 26.8,
+        "vram_mb_max": 2599.0,
+        "cpu_util_avg": 41.7
+      },
+      "error": null
+    }
+  ]
+}

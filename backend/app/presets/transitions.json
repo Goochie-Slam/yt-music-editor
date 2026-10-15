@@ -1,0 +1,12 @@
+[
+  {"id": "smooth-blend", "name": "Smooth Blend", "hint": "R&B, ballad — mặc định",
+   "fadeOut": 6, "fadeIn": 6, "overlap": 6, "curveOut": "equal-power", "curveIn": "equal-power"},
+  {"id": "quick-mix", "name": "Quick Mix", "hint": "EDM, remix, disco — giữ năng lượng",
+   "fadeOut": 2.5, "fadeIn": 2.5, "overlap": 2.5, "curveOut": "equal-power", "curveIn": "equal-power"},
+  {"id": "long-dissolve", "name": "Long Dissolve", "hint": "Lofi, sleep, ambient, piano",
+   "fadeOut": 12, "fadeIn": 12, "overlap": 12, "curveOut": "s-curve", "curveIn": "s-curve"},
+  {"id": "radio-segue", "name": "Radio Segue", "hint": "Pop, bài có intro mạnh",
+   "fadeOut": 5, "fadeIn": 1.5, "overlap": 1.5, "curveOut": "log", "curveIn": "equal-power"},
+  {"id": "fade-breathe", "name": "Fade & Breathe", "hint": "Jazz, acoustic, đổi mood — lặng 1.5s",
+   "fadeOut": 3, "fadeIn": 1, "overlap": -1.5, "curveOut": "log", "curveIn": "linear"}
+]
