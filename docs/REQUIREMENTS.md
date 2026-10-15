@@ -317,7 +317,7 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 |---|---|---|
 | N1 | Hệ điều hành | Windows 10/11 64-bit. Bản portable: giải nén → chạy `Start.bat` → tự mở trình duyệt. Đã bundle Python, FFmpeg, yt-dlp |
 | N2 | Offline | Mọi chức năng trừ tải link đều chạy offline |
-| N3 | **Tốc độ render** trên RTX 3050 (nền ảnh + 2–3 effect + visualizer, 30fps) | 1080p: **≥ 2× realtime** (mix 3 tiếng ≤ 90 phút) · 1440p: ≥ 1.1× · 4K: ≥ 0.5× (mix 3 tiếng ≈ 6 tiếng). *Chưa đo — Spike S1 sẽ chốt* |
+| N3 | **Tốc độ render** trên RTX 3050 (nền ảnh + zoom + grain + bụi + visualizer + 2 chữ + **1 overlay video**, 30fps) | 1080p: **≥ 3× realtime** (mix 3 tiếng ≤ 60 phút) · 1440p: ≥ 2× (≤ 90 phút) · 4K: ≥ 0.7× (≈ 4,3 tiếng). Đã đo ở Spike S1 (D-21): 4.75× · 3.04× · 0.97× — mục tiêu chừa ~30% cho phần app thật chạy thêm. Mỗi video nền / overlay video thêm vào tốn thêm 1 luồng decode (đo được: −37% fps ở 1080p, −51% ở 4K). Kiểm lại ở M6 bằng mix 3 tiếng thật |
 | N4 | Xuất mix MP3 3 tiếng (đã có cache normalize) | ≤ 5 phút |
 | N5 | UI mượt với 100 bài trong mix | Kéo thả không lag, mở Transition Editor < 300ms |
 | N6 | Preview ↔ render | Preview trên canvas **giống bản render** (cùng shader). Sai khác chấp nhận: chất lượng preview thấp hơn khi máy yếu |

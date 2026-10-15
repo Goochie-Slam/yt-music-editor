@@ -2,7 +2,7 @@
 
 App local (Windows) để sản xuất video playlist nhạc dài 1–3 tiếng: lấy audio từ file/link → xuất MP3 → ghép mix với transition → render MP4 có overlay, effect, sóng nhạc, tên bài.
 
-> Trạng thái: **M1 (khung app) xong**. M0 — benchmark render: script xong, **chờ chạy trên máy RTX 3050** (`bench/README.md`).
+> Trạng thái: **M0 (benchmark render) và M1 (khung app) xong**. Kết quả benchmark: `bench/archive/`, quyết định D-21 trong `docs/DECISIONS.md`.
 
 ## Chạy thử
 

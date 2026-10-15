@@ -1,7 +1,7 @@
 # YT Music Editor — Project Overview
 
 > Dành cho developer mới tham gia dự án. Đọc file này trước, sau đó đọc [`CODING-GUIDE.md`](./CODING-GUIDE.md).
-> Cập nhật: 2026-10-12 · Trạng thái: **M1 (khung app) xong · M0 chờ chạy benchmark trên máy RTX 3050**
+> Cập nhật: 2026-10-15 · Trạng thái: **M0 (benchmark) xong · M1 (khung app) xong** · tiếp theo: M2
 
 ---
 
@@ -121,7 +121,7 @@ Chi tiết: mục 10 của [`CODING-GUIDE.md`](./CODING-GUIDE.md).
 | Milestone | Nội dung | Trạng thái |
 |---|---|---|
 | Thiết kế | Requirements v0.3, UI/UX v0.3, mockup | ✅ Xong |
-| **M0 — Spike S1** | Benchmark render trên RTX 3050 6GB → chốt kiến trúc render | 🟡 Script xong (`bench/`) — **chờ PO chạy trên máy thật** |
+| **M0 — Spike S1** | Benchmark render trên RTX 3050 6GB → chốt kiến trúc render | ✅ Xong — cách A, 1080p 4.75× realtime (D-21) |
 | M1 — Skeleton | Repo, CI, backend + frontend khung, project/autosave, đóng gói Windows | ✅ Xong |
 | M2 — Thư viện | Ingest, yt-dlp, tracklist, xuất MP3 | ⬜ |
 | M3 — Mix | Transition, preset, normalize, trim, nghe thử, xuất mix | ⬜ |
@@ -138,7 +138,8 @@ Chi tiết từng milestone và ước lượng công: mục 9 của `CODING-GUI
 
 | Rủi ro | Vì sao quan trọng | Cách xử lý |
 |---|---|---|
-| **Render chậm** trên RTX 3050 6GB | Mix 3 tiếng = 324.000 frame. Nếu render mất 4–5 tiếng ở 1080p thì app không dùng được | **M0 làm trước tiên.** Không viết UI video trước khi có số liệu |
+| ~~Render chậm~~ trên RTX 3050 6GB | **Đã gỡ ở M0:** mix 3 tiếng 1080p ≈ 40 phút, 4K ≈ 3 tiếng (D-21) | Còn phải chứng minh: chạy liền 3 tiếng không rò bộ nhớ / không tụt tốc do nóng máy (N7) — chỉ đo được ở M6 |
+| **Ổ đĩa đầy** khi render | File 3 tiếng: 1080p ≈ 11 GB · 1440p ≈ 20 GB · 4K ≈ 40 GB (chưa tính chunk tạm) | Kiểm tra dung lượng trước khi render (F4.10) phải tính cả chunk tạm, tức ~2× dung lượng file |
 | **Preview ≠ bản render** | User chỉnh trên preview, render ra khác thì mất lòng tin | Shader GLSL dùng chung, effect là hàm thuần `f(t)`, có test so khớp frame |
 | **Phình phạm vi** | Thiết kế đã lớn hơn "app đơn giản" nhiều | Chỉ làm đúng P1. Muốn thêm gì phải qua Product Owner và ghi vào `DECISIONS.md` |
 | **yt-dlp hỏng** khi YouTube đổi hệ thống | Mất chức năng lấy link | Dùng `yt-dlp.exe` riêng, có nút cập nhật |
