@@ -20,7 +20,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import __version__
-from app.api import jobs, presets, projects, system, ws
+from app.api import jobs, library, presets, projects, system, ws
 from app.core.config import Settings, load_settings
 from app.core.errors import install_handlers
 from app.core.events import EventBus
@@ -62,7 +62,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.projects = ProjectStore(settings.data_dir)
     app.state.presets = PresetStore(settings.presets_dir)
     install_handlers(app)
-    for r in (system.router, jobs.router, projects.router, presets.router, ws.router):
+    for r in (
+        system.router,
+        jobs.router,
+        projects.router,
+        presets.router,
+        library.router,
+        ws.router,
+    ):
         app.include_router(r)
     if settings.frontend_dist.is_dir():
         app.mount("/", StaticFiles(directory=settings.frontend_dist, html=True), name="ui")

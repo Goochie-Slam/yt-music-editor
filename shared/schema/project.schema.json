@@ -267,11 +267,16 @@
         },
         "path": {
           "type": "string"
+        },
+        "uploaded": {
+          "default": false,
+          "type": "boolean"
         }
       },
       "required": [
         "kind",
-        "path"
+        "path",
+        "uploaded"
       ],
       "title": "FileSource",
       "type": "object"
@@ -345,8 +350,31 @@
       "title": "ImageElement",
       "type": "object"
     },
+    "LibraryExport": {
+      "additionalProperties": false,
+      "description": "Settings of the batch MP3 export (F1.4); remembered per project.",
+      "properties": {
+        "folder": {
+          "default": "",
+          "type": "string"
+        },
+        "pattern": {
+          "default": "{index} - {title}",
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "folder",
+        "pattern"
+      ],
+      "title": "LibraryExport",
+      "type": "object"
+    },
     "LibraryItem": {
       "additionalProperties": false,
+      "description": "A segment has no cache_wav of its own: it plays a range of its parent's WAV (F1.5).",
       "properties": {
         "id": {
           "type": "string"
@@ -409,6 +437,25 @@
           ],
           "default": null
         },
+        "srcFormat": {
+          "default": "",
+          "type": "string"
+        },
+        "srcLossless": {
+          "default": false,
+          "type": "boolean"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "loudness": {
           "anyOf": [
             {
@@ -428,6 +475,9 @@
         "cacheWav",
         "duration",
         "srcBitrateKbps",
+        "srcFormat",
+        "srcLossless",
+        "error",
         "loudness"
       ],
       "title": "LibraryItem",
@@ -1003,12 +1053,17 @@
         "site": {
           "default": "",
           "type": "string"
+        },
+        "remoteId": {
+          "default": "",
+          "type": "string"
         }
       },
       "required": [
         "kind",
         "url",
-        "site"
+        "site",
+        "remoteId"
       ],
       "title": "UrlSource",
       "type": "object"
@@ -1215,6 +1270,9 @@
       },
       "type": "array"
     },
+    "libraryExport": {
+      "$ref": "#/$defs/LibraryExport"
+    },
     "mix": {
       "$ref": "#/$defs/Mix"
     },
@@ -1232,6 +1290,7 @@
     "createdAt",
     "updatedAt",
     "library",
+    "libraryExport",
     "mix",
     "video",
     "export"

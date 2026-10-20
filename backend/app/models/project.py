@@ -43,13 +43,15 @@ class Model(BaseModel):
 
 class FileSource(Model):
     kind: Literal["file"] = "file"
-    path: str
+    path: str  # absolute path on this machine; for a drag-and-dropped file only its name
+    uploaded: bool = False  # dropped into the browser: the bytes were copied in, path unknown
 
 
 class UrlSource(Model):
     kind: Literal["url"] = "url"
     url: str
     site: str = ""  # youtube / soundcloud / mixcloud / … as reported by yt-dlp
+    remote_id: str = ""  # the site's id for the media: same song via another URL → same cache
 
 
 class SegmentSource(Model):
@@ -71,13 +73,25 @@ class Loudness(Model):
 
 
 class LibraryItem(Model):
+    """A segment has no cache_wav of its own: it plays a range of its parent's WAV (F1.5)."""
+
     id: str = Field(default_factory=new_id)
     title: str
     source: Source
     cache_wav: str | None = None  # relative to the project folder; lossless (F1.11)
     duration: Seconds | None = None
     src_bitrate_kbps: int | None = None
+    src_format: str = ""  # shown to the user, e.g. "flac", "mkv/aac", "webm/opus"
+    src_lossless: bool = False  # F1.8 only warns about low bitrate for lossy sources
+    error: str | None = None  # Vietnamese reason of the last failed import
     loudness: Loudness | None = None
+
+
+class LibraryExport(Model):
+    """Settings of the batch MP3 export (F1.4); remembered per project."""
+
+    folder: str = ""  # empty = "<project folder>/export"
+    pattern: str = Field("{index} - {title}", min_length=1, max_length=200)
 
 
 # --------------------------------------------------------------------------- mix
@@ -294,6 +308,7 @@ class Project(Model):
     created_at: datetime = Field(default_factory=utcnow)
     updated_at: datetime = Field(default_factory=utcnow)
     library: list[LibraryItem] = Field(default_factory=list)
+    library_export: LibraryExport = Field(default_factory=LibraryExport)
     mix: Mix = Field(default_factory=Mix)
     video: Video = Field(default_factory=Video)
     export: ExportSettings = Field(default_factory=ExportSettings)

@@ -132,3 +132,19 @@ def run(
     if not result.ok:
         log.warning("process failed (%s): %s\n%s", result.returncode, argv, result.stderr_text())
     return result
+
+
+def open_folder(folder: Path) -> None:
+    """Open a folder in the desktop file manager, without waiting for it."""
+    if sys.platform == "win32":
+        os.startfile(folder)
+    else:
+        opener = "open" if sys.platform == "darwin" else "xdg-open"
+        with contextlib.suppress(OSError):  # headless dev box / CI: nothing to open
+            subprocess.Popen(
+                [opener, str(folder)],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
+            )

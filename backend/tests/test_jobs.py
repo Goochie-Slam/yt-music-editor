@@ -75,3 +75,25 @@ def test_failures_are_captured_with_vietnamese_message() -> None:
     assert a.error and a.error["code"] == "ffmpeg_failed" and "FFmpeg" in a.error["message_vi"]
     assert b.error and b.error["code"] == "internal" and b.error["detail"] == "bug"
     mgr.shutdown()
+
+
+def test_light_lane_is_not_blocked_by_heavy_jobs() -> None:
+    """F1.7: three long downloads must not stall a quick link lookup."""
+    from app.core.jobs import HEAVY_WORKERS, Lane
+
+    mgr = JobManager(EventBus())
+    release = threading.Event()
+
+    def heavy(ctx: JobContext) -> None:
+        while not release.is_set():
+            ctx.check_cancelled()
+            time.sleep(0.01)
+
+    blockers = [mgr.submit("dl", f"dl{i}", heavy) for i in range(HEAVY_WORKERS + 1)]
+    quick = mgr.submit("resolve", "r", lambda _: "ok", lane=Lane.LIGHT, meta={"url": "u"})
+    wait_for(lambda: quick.state == JobState.DONE)
+    assert quick.to_event()["meta"] == {"url": "u"}
+    assert blockers[-1].state == JobState.QUEUED  # the 4th heavy job waits: N = 3
+    release.set()
+    wait_for(lambda: all(b.state == JobState.DONE for b in blockers))
+    mgr.shutdown()

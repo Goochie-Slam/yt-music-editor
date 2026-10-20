@@ -44,6 +44,9 @@ class Settings:
     ffmpeg: Path | None = None
     ffprobe: Path | None = None
     ytdlp: Path | None = None
+    # YouTube needs a JavaScript runtime for yt-dlp (Deno preferred, Node.js works too)
+    deno: Path | None = None
+    node: Path | None = None
     frontend_dist: Path = REPO_DIR / "frontend" / "dist"
     extra_hosts: list[str] = field(default_factory=list)  # tests add "testserver"
 
@@ -76,6 +79,8 @@ def load_settings() -> Settings:
         ffmpeg=find_binary("ffmpeg", "YTME_FFMPEG"),
         ffprobe=find_binary("ffprobe", "YTME_FFPROBE"),
         ytdlp=find_binary("yt-dlp", "YTME_YTDLP"),
+        deno=find_binary("deno", "YTME_DENO"),
+        node=find_binary("node", "YTME_NODE"),
     )
     if d := os.environ.get("YTME_DATA_DIR"):
         s.data_dir = Path(d)

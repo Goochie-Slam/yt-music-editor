@@ -19,6 +19,17 @@ from app.core.util import new_id
 log = logging.getLogger(__name__)
 
 
+class Lane(StrEnum):
+    """Heavy work (download, decode, encode) is capped at F1.7's N; lookups never wait on it."""
+
+    HEAVY = "heavy"
+    LIGHT = "light"
+
+
+HEAVY_WORKERS = 3  # F1.7 default
+LIGHT_WORKERS = 4
+
+
 class JobState(StrEnum):
     QUEUED = "queued"
     RUNNING = "running"
@@ -40,6 +51,7 @@ class Job:
     message: str = ""
     error: dict[str, str] | None = None
     result: Any = None
+    meta: dict[str, str] = field(default_factory=dict)  # e.g. projectId / itemId for the UI
     created_at: float = field(default_factory=time.time)
     cancel_event: threading.Event = field(default_factory=threading.Event, repr=False)
 
@@ -54,6 +66,8 @@ class Job:
             "message": self.message,
             "error": self.error,
             "result": self.result,
+            "meta": self.meta,
+            "createdAt": self.created_at,
         }
 
 
@@ -82,21 +96,32 @@ JobFn = Callable[[JobContext], Any]
 
 
 class JobManager:
-    def __init__(self, bus: EventBus, workers: int = 3):
+    def __init__(self, bus: EventBus, workers: int = HEAVY_WORKERS):
         self._bus = bus
-        self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="job")
+        self._pools = {
+            Lane.HEAVY: ThreadPoolExecutor(max_workers=workers, thread_name_prefix="job"),
+            Lane.LIGHT: ThreadPoolExecutor(max_workers=LIGHT_WORKERS, thread_name_prefix="job-l"),
+        }
         self._jobs: dict[str, Job] = {}
         self._lock = threading.Lock()
 
     def emit(self, job: Job) -> None:
         self._bus.publish(job.to_event())
 
-    def submit(self, kind: str, title: str, fn: JobFn) -> Job:
-        job = Job(new_id(), kind, title)
+    def submit(
+        self,
+        kind: str,
+        title: str,
+        fn: JobFn,
+        *,
+        lane: Lane = Lane.HEAVY,
+        meta: dict[str, str] | None = None,
+    ) -> Job:
+        job = Job(new_id(), kind, title, meta=meta or {})
         with self._lock:
             self._jobs[job.id] = job
         self.emit(job)
-        self._pool.submit(self._run, job, fn)
+        self._pools[lane].submit(self._run, job, fn)
         return job
 
     def _run(self, job: Job, fn: JobFn) -> None:
@@ -139,4 +164,5 @@ class JobManager:
         for job in self.list():
             if job.state not in FINISHED:
                 job.cancel_event.set()
-        self._pool.shutdown(wait=True, cancel_futures=True)
+        for pool in self._pools.values():
+            pool.shutdown(wait=True, cancel_futures=True)

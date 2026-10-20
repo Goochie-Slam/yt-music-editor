@@ -15,11 +15,14 @@ export interface Project {
   createdAt: string;
   updatedAt: string;
   library: LibraryItem[];
+  libraryExport: LibraryExport;
   mix: Mix;
   video: Video;
   export: ExportSettings;
 }
 /**
+ * A segment has no cache_wav of its own: it plays a range of its parent's WAV (F1.5).
+ *
  * This interface was referenced by `Project`'s JSON-Schema
  * via the `definition` "LibraryItem".
  */
@@ -30,6 +33,9 @@ export interface LibraryItem {
   cacheWav: string | null;
   duration: number | null;
   srcBitrateKbps: number | null;
+  srcFormat: string;
+  srcLossless: boolean;
+  error: string | null;
   loudness: Loudness | null;
 }
 /**
@@ -39,6 +45,7 @@ export interface LibraryItem {
 export interface FileSource {
   kind: "file";
   path: string;
+  uploaded: boolean;
 }
 /**
  * This interface was referenced by `Project`'s JSON-Schema
@@ -48,6 +55,7 @@ export interface UrlSource {
   kind: "url";
   url: string;
   site: string;
+  remoteId: string;
 }
 /**
  * A piece cut from another library item by the tracklist splitter (F1.5).
@@ -69,6 +77,16 @@ export interface Loudness {
   integrated: number;
   truePeak: number;
   lra: number;
+}
+/**
+ * Settings of the batch MP3 export (F1.4); remembered per project.
+ *
+ * This interface was referenced by `Project`'s JSON-Schema
+ * via the `definition` "LibraryExport".
+ */
+export interface LibraryExport {
+  folder: string;
+  pattern: string;
 }
 /**
  * This interface was referenced by `Project`'s JSON-Schema

@@ -17,12 +17,42 @@ MESSAGES: dict[str, str] = {
     "ffmpeg_failed": "FFmpeg báo lỗi khi xử lý.",
     "preset_builtin": "Không thể sửa hoặc xóa preset có sẵn.",
     "preset_name_taken": 'Đã có preset tên "{name}".',
+    # library: files
+    "file_not_found": "Không tìm thấy file: {path}",
+    "unsupported_file": "Không đọc được file này — định dạng không hỗ trợ hoặc file bị hỏng.",
+    "no_audio": "File không có âm thanh.",
+    "decode_failed": "Giải mã âm thanh thất bại.",
+    "disk_full": "Ổ đĩa không đủ chỗ: cần khoảng {need}, chỉ còn {free}.",
+    "outside_project": "Đường dẫn nằm ngoài thư mục project.",
+    "export_folder_invalid": "Không tạo được thư mục xuất: {path}",
+    "pattern_invalid": "Mẫu tên file phải có {{title}} hoặc {{index}}.",
+    "nothing_selected": "Chưa chọn bài nào.",
+    # library: links (yt-dlp)
+    "ytdlp_missing": "Không tìm thấy yt-dlp. Chạy lại Start.bat để app tự tải về.",
+    "yt_private": "Video riêng tư.",
+    "yt_unavailable": "Nội dung không còn tồn tại hoặc đã bị gỡ.",
+    "yt_age": "Nội dung giới hạn độ tuổi — cần đăng nhập, app không hỗ trợ.",
+    "yt_geo": "Nội dung bị chặn ở quốc gia của anh.",
+    "yt_members": "Nội dung chỉ dành cho thành viên hoặc phải trả phí.",
+    "yt_drm": "Nội dung có DRM — không tải được.",
+    "yt_live": "Đang phát trực tiếp — chờ buổi phát kết thúc rồi thử lại.",
+    "yt_bot": "Trang yêu cầu xác minh chống bot. Thử lại sau ít phút hoặc cập nhật yt-dlp.",
+    "yt_rate_limited": "Bị trang chặn tạm thời vì tải quá nhiều (HTTP 429). Thử lại sau.",
+    "yt_js_runtime": (
+        "yt-dlp cần Node.js hoặc Deno để tải từ YouTube. Cài Node.js 22 rồi mở lại app."
+    ),
+    "yt_unsupported": "Link này không được hỗ trợ.",
+    "yt_not_found": "Không tìm thấy nội dung (lỗi 404). Kiểm tra lại link.",
+    "yt_network": "Không kết nối được tới trang. Kiểm tra mạng.",
+    "yt_failed": "yt-dlp báo lỗi: {reason}",
+    "ytdlp_update_failed": "Cập nhật yt-dlp thất bại.",
 }
 
 WHAT: dict[str, str] = {
     "job": "tác vụ",
     "project": "project",
     "preset": "preset",
+    "item": "bài trong thư viện",
 }
 
 
