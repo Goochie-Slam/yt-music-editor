@@ -139,6 +139,13 @@ def test_url_key_uses_site_id() -> None:
     assert a == b != ingest.url_key("https://youtu.be/abc")
 
 
+def test_generic_links_are_keyed_by_url() -> None:
+    """The generic extractor's id is the file name: a/mix.mp3 and b/mix.mp3 are different songs."""
+    a = ingest.url_key("http://x/a/mix.mp3", "Generic", "mix")
+    b = ingest.url_key("http://x/b/mix.mp3", "generic", "mix")
+    assert a != b
+
+
 # ------------------------------------------------------------- real yt-dlp, local web server
 
 
@@ -200,3 +207,29 @@ def test_missing_link_is_a_clear_error(site: tuple[Path, str], tmp_path: Path) -
     with pytest.raises(AppError) as e:
         ytdlp.resolve(tools(), f"{base}/không-có.mp3")
     assert e.value.code == "yt_not_found"
+
+
+def test_channel_tabs_are_not_songs() -> None:
+    out = json.dumps(
+        {
+            "_type": "playlist",
+            "title": "Kênh nhạc",
+            "entries": [
+                {
+                    "_type": "url",
+                    "url": "https://www.youtube.com/@x/videos",
+                    "title": "Videos",
+                    "ie_key": "YoutubeTab",
+                },
+                {
+                    "_type": "url",
+                    "url": "https://www.youtube.com/watch?v=a",
+                    "title": "Bài",
+                    "ie_key": "Youtube",
+                    "id": "a",
+                },
+            ],
+        }
+    )
+    entries = ytdlp.parse_resolve(out, "https://www.youtube.com/@x")["entries"]
+    assert [e["available"] for e in entries] == [False, True]

@@ -216,3 +216,26 @@ def test_expand_paths_walks_folders_and_filters(tmp_path: Path) -> None:
         "sub/notes.txt",
     ]
     assert missing == [str(tmp_path / "không tồn tại"), "relative/path.mp3"]
+
+
+def test_same_file_imported_twice_at_once(media: Path, project: Path) -> None:
+    """The same file dropped twice: both jobs succeed with one cache entry, nothing collides."""
+    import threading
+
+    src = sine(media / "trùng.flac", 30)
+    results: list[ingest.IngestResult] = []
+    errors: list[BaseException] = []
+
+    def run() -> None:
+        try:
+            results.append(run_ingest(project, src))
+        except BaseException as e:
+            errors.append(e)
+
+    threads = [threading.Thread(target=run) for _ in range(3)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert errors == [] and len(results) == 3 and len(set(results)) == 1
+    assert sorted(p.suffix for p in (project / ingest.AUDIO_DIR).iterdir()) == [".json", ".wav"]

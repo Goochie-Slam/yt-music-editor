@@ -360,8 +360,6 @@
         },
         "pattern": {
           "default": "{index} - {title}",
-          "maxLength": 200,
-          "minLength": 1,
           "type": "string"
         }
       },

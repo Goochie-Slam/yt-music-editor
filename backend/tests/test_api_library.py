@@ -223,3 +223,17 @@ def test_open_folder(client: TestClient, tmp_path: Path, monkeypatch: pytest.Mon
     assert opened == [tmp_path]
     r = client.post("/api/system/open-folder", json={"path": str(tmp_path / "nope")})
     assert r.status_code == 404
+
+
+def test_startup_sweeps_leftovers(settings: Settings, projects_dir: Path) -> None:
+    with TestClient(create_app(settings)) as c:
+        _, folder = new_project(c, projects_dir)
+    (folder / "cache" / "uploads").mkdir(parents=True)
+    (folder / "cache" / "uploads" / "x.mkv").write_bytes(b"copy of a dropped file")
+    (folder / "cache" / "audio").mkdir(parents=True, exist_ok=True)
+    (folder / "cache" / "audio" / "k.part.wav").write_bytes(b"half")
+    (folder / "cache" / "audio" / "k2.wav").write_bytes(b"done")
+    with TestClient(create_app(settings)):
+        pass
+    assert list((folder / "cache" / "uploads").iterdir()) == []
+    assert [p.name for p in (folder / "cache" / "audio").iterdir()] == ["k2.wav"]

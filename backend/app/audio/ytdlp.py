@@ -99,6 +99,12 @@ def _site(info: dict[str, Any], fallback: str = "") -> str:
     return str(info.get("ie_key") or info.get("extractor_key") or fallback).lower()
 
 
+def _is_list(e: dict[str, Any]) -> bool:
+    """A channel link lists tabs (Videos, Shorts…), each a playlist itself: not one song."""
+    ie = str(e.get("ie_key") or "").lower()
+    return e.get("_type") == "playlist" or ie.endswith("tab") or "playlist" in ie
+
+
 def _entry(e: dict[str, Any], fallback_site: str) -> dict[str, Any]:
     url = str(e.get("webpage_url") or e.get("url") or "")
     title = str(e.get("title") or url)
@@ -108,7 +114,7 @@ def _entry(e: dict[str, Any], fallback_site: str) -> dict[str, Any]:
         "duration": e.get("duration"),
         "site": _site(e, fallback_site),
         "remoteId": str(e.get("id") or ""),
-        "available": bool(url) and title.lower() not in UNAVAILABLE_TITLES,
+        "available": bool(url) and title.lower() not in UNAVAILABLE_TITLES and not _is_list(e),
     }
 
 
@@ -184,7 +190,9 @@ def download(
     template = str(out_dir / f"{stem}.%(ext)s").replace("%", "%%").replace("%%(ext)s", "%(ext)s")
     # fmt: off
     args = [
-        *tools.base(), "--no-playlist", "-f", "bestaudio/best", "--no-simulate",
+        # --playlist-items 1: should a playlist URL get here anyway, take one song, never all
+        *tools.base(), "--no-playlist", "--playlist-items", "1",
+        "-f", "bestaudio/best", "--no-simulate",
         "--progress", "--newline", "--progress-template",
         "download:[dl] %(progress.downloaded_bytes)s %(progress.total_bytes)s "
         "%(progress.total_bytes_estimate)s",

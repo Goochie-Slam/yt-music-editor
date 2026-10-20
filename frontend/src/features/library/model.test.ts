@@ -16,6 +16,8 @@ import {
   segmentItems,
   splitInput,
   statusOf,
+  uniqueBy,
+  linkKey,
 } from "./model";
 
 function project(library: LibraryItem[] = []): Project {
@@ -292,5 +294,28 @@ describe("display", () => {
 
   it("makes ids safe for file names", () => {
     expect(newId()).toMatch(/^[A-Za-z0-9]{10}$/);
+  });
+});
+
+describe("link identity", () => {
+  it("does not treat two generic links with the same file name as one song", () => {
+    const p = project([
+      newItem("a", { kind: "url", url: "http://x/a/mix.mp3", site: "generic", remoteId: "mix" }),
+    ]);
+    expect(
+      isDuplicate(p, { kind: "url", url: "http://x/b/mix.mp3", site: "generic", remoteId: "mix" }),
+    ).toBe(false);
+    expect(
+      isDuplicate(p, { kind: "url", url: "http://x/a/mix.mp3", site: "generic", remoteId: "mix" }),
+    ).toBe(true);
+  });
+
+  it("drops a video listed twice in one playlist", () => {
+    const e = (url: string, remoteId: string) => ({ url, site: "youtube", remoteId });
+    const out = uniqueBy(
+      [e("https://youtu.be/a", "a"), e("https://www.youtube.com/watch?v=a", "a"), e("u", "b")],
+      linkKey,
+    );
+    expect(out.map((x) => x.remoteId)).toEqual(["a", "b"]);
   });
 });

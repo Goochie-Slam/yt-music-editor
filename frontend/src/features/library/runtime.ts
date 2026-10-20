@@ -20,11 +20,13 @@ interface LibraryRuntime {
   playlists: PendingPlaylist[];
   system: SystemInfo | null;
   exportJobId: string | null;
+  exportRequesting: boolean;
   setSelected: (ids: Iterable<string>) => void;
   toggle: (id: string, on: boolean) => void;
   setUpload: (itemId: string, fraction: number | null) => void;
   setSystem: (s: SystemInfo) => void;
   setExportJob: (id: string | null) => void;
+  setExportRequesting: (v: boolean) => void;
 }
 
 export const useLibrary = create<LibraryRuntime>((set) => ({
@@ -34,6 +36,7 @@ export const useLibrary = create<LibraryRuntime>((set) => ({
   playlists: [],
   system: null,
   exportJobId: null,
+  exportRequesting: false,
   setSelected: (ids) => set({ selected: new Set(ids) }),
   toggle: (id, on) =>
     set((s) => {
@@ -49,6 +52,7 @@ export const useLibrary = create<LibraryRuntime>((set) => ({
     }),
   setSystem: (system) => set({ system }),
   setExportJob: (exportJobId) => set({ exportJobId }),
+  setExportRequesting: (exportRequesting) => set({ exportRequesting }),
 }));
 
 /** Dropped files kept for retry. Memory is not an issue: a File is a handle, not its bytes. */

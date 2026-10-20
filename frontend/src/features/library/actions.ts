@@ -18,11 +18,13 @@ import {
   isDuplicate,
   isReady,
   latestJobs,
+  linkKey,
   newId,
   newItem,
   reconcile,
   removeItems,
   stemOf,
+  uniqueBy,
 } from "./model";
 import { droppedFiles, uploadAborts, useLibrary } from "./runtime";
 
@@ -154,7 +156,9 @@ function reportDuplicates(n: number) {
 export function addFiles(files: File[]) {
   const project = useProject.getState().project;
   if (!project || !files.length) return;
-  const items = files.map((f) => {
+  const unique = uniqueBy(files, (f) => [`${f.name}|${f.size}|${f.lastModified}`]);
+  reportDuplicates(files.length - unique.length);
+  const items = unique.map((f) => {
     const item = newItem(stemOf(f.name), { kind: "file", path: f.name, uploaded: true });
     droppedFiles.set(item.id, f);
     return item;
@@ -183,11 +187,14 @@ export async function addPaths(paths: string[]) {
 export function addLinkEntries(entries: LinkEntry[]) {
   const project = useProject.getState().project;
   if (!project) return;
-  const usable = entries.filter((e) => e.available);
+  const usable = uniqueBy(
+    entries.filter((e) => e.available),
+    (e) => linkKey(e),
+  );
   const fresh = usable.filter(
     (e) => !isDuplicate(project, { kind: "url", url: e.url, site: e.site, remoteId: e.remoteId }),
   );
-  reportDuplicates(usable.length - fresh.length);
+  reportDuplicates(entries.filter((e) => e.available).length - fresh.length);
   addItems(
     fresh.map((e) =>
       newItem(e.title, { kind: "url", url: e.url, site: e.site, remoteId: e.remoteId }),
@@ -289,8 +296,10 @@ export function addSelectedToMix() {
 
 export async function startExport(entries: ExportEntry[]) {
   const project = useProject.getState().project;
-  if (!project || !entries.length) return;
+  const lib = useLibrary.getState();
+  if (!project || !entries.length || exportBusy(lib.exportRequesting, lib.exportJobId)) return;
   const { folder, pattern } = project.libraryExport;
+  lib.setExportRequesting(true); // a double-click must not start two exports
   try {
     const { jobId } = await api.exportMp3(project.id, folder, pattern, entries);
     trackJob(jobId, "export", t("library.export.jobTitle", { n: entries.length }), {
@@ -299,7 +308,14 @@ export async function startExport(entries: ExportEntry[]) {
     useLibrary.getState().setExportJob(jobId);
   } catch (e) {
     toast(errText(e), "err");
+  } finally {
+    useLibrary.getState().setExportRequesting(false);
   }
+}
+
+export function exportBusy(requesting: boolean, jobId: string | null): boolean {
+  const job = jobId ? useJobs.getState().jobs[jobId] : undefined;
+  return requesting || (!!job && !FINISHED.has(job.state));
 }
 
 // --------------------------------------------------------------------------- sync

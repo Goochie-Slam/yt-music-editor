@@ -105,3 +105,29 @@ def test_export_checks_disk_space(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
             JobCtx(),  # type: ignore[arg-type]
         )
     assert e.value.code == "disk_full"
+
+
+@requires_ffmpeg
+def test_two_exports_into_one_folder_at_once(tmp_path: Path) -> None:
+    """D-30 must hold even when the user starts a second export before the first finished."""
+    import threading
+
+    assert FFMPEG and FFPROBE
+    project = tmp_path / "p"
+    r = ingest.ingest_file(FFMPEG, FFPROBE, project, sine(tmp_path / "a.wav", 2), JobCtx())  # type: ignore[arg-type]
+    entries = [export.Entry("Bài", project / r.cache_wav, duration=2) for _ in range(3)]
+    out = tmp_path / "out"
+    results: list[dict] = []  # type: ignore[type-arg]
+
+    def run() -> None:
+        results.append(export.export_mp3(FFMPEG, entries, out, "{title}", JobCtx()))  # type: ignore[arg-type]
+
+    threads = [threading.Thread(target=run) for _ in range(2)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    names = sorted(n for res in results for n in res["files"])
+    assert len(names) == 6 and len(set(names)) == 6
+    assert sorted(p.name for p in out.iterdir()) == names
+    assert all((out / n).stat().st_size > 1000 for n in names)

@@ -22,7 +22,8 @@ export function LibraryTab() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (isTyping(e) || mode !== "import") return;
+      // the playlist picker is modal: Del / Ctrl+A there must not touch the table behind it
+      if (isTyping(e) || mode !== "import" || useLibrary.getState().playlists.length) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
         e.preventDefault();
         const ids = useProject.getState().project?.library.map((i) => i.id) ?? [];

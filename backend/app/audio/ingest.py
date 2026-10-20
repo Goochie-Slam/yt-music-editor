@@ -13,13 +13,14 @@ a file still hits the cache, and changing the decode settings invalidates it.
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import json
 import logging
 import os
 import shutil
 import threading
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -169,9 +170,30 @@ def file_key(path: Path, sample: int = 1 << 20) -> str:
 
 
 def url_key(url: str, site: str = "", remote_id: str = "") -> str:
-    """The site's own id, so youtu.be/x and youtube.com/watch?v=x share one download."""
-    ident = f"{site.lower()}:{remote_id}" if site and remote_id else url.strip()
+    """The site's own id, so youtu.be/x and youtube.com/watch?v=x share one download. Not for
+    yt-dlp's generic extractor: its "id" is just the file name (a/mix.mp3 and b/mix.mp3)."""
+    site = site.lower()
+    ident = f"{site}:{remote_id}" if site and site != "generic" and remote_id else url.strip()
     return _digest(ident.encode())
+
+
+_key_locks: dict[str, threading.RLock] = {}
+_key_locks_guard = threading.Lock()
+
+
+@contextlib.contextmanager
+def _locked(project_dir: Path, key: str, ctx: JobContext) -> Iterator[None]:
+    """One import per cache entry at a time: the same file dropped twice, or a playlist that has a
+    song twice, must not write the same temp file from two jobs. The second waits, then hits the
+    cache. Re-entrant: a link's download step holds it while it decodes."""
+    with _key_locks_guard:
+        lock = _key_locks.setdefault(f"{project_dir.resolve()}|{key}", threading.RLock())
+    while not lock.acquire(timeout=0.2):
+        ctx.check_cancelled()
+    try:
+        yield
+    finally:
+        lock.release()
 
 
 def _paths(project_dir: Path, key: str) -> tuple[Path, Path]:
@@ -294,6 +316,21 @@ def ingest_file(
     if not src.is_file():
         raise AppError(404, "file_not_found", str(src), path=str(src))
     key = key or file_key(src)
+    with _locked(project_dir, key, ctx):
+        return _ingest_file(ffmpeg, ffprobe, project_dir, src, ctx, lo, hi, title, key)
+
+
+def _ingest_file(
+    ffmpeg: Path,
+    ffprobe: Path,
+    project_dir: Path,
+    src: Path,
+    ctx: JobContext,
+    lo: float,
+    hi: float,
+    title: str | None,
+    key: str,
+) -> IngestResult:
     if (hit := cached(project_dir, key)) is not None:
         return hit
     info = probe(ffprobe, src)
@@ -376,6 +413,14 @@ def ingest_url(
     """Download (yt-dlp) → decode. The downloaded original is deleted once the WAV exists."""
     assert tools.ffmpeg is not None
     key = url_key(url, site, remote_id)
+    with _locked(project_dir, key, ctx):
+        return _ingest_url(tools, ffprobe, project_dir, url, ctx, key)
+
+
+def _ingest_url(
+    tools: ytdlp.Tools, ffprobe: Path, project_dir: Path, url: str, ctx: JobContext, key: str
+) -> IngestResult:
+    assert tools.ffmpeg is not None
     if (hit := cached(project_dir, key)) is not None:
         return hit
     ctx.progress(0.0, "Đang tải…")
@@ -399,3 +444,18 @@ def ingest_url(
         )
     finally:
         dl.path.unlink(missing_ok=True)
+
+
+def sweep_temp(project_dir: Path) -> int:
+    """At startup, before any job runs: drop copies of dropped files and half-decoded WAVs left
+    behind when the app was closed mid-import. Downloads (cache/dl) stay: yt-dlp resumes them."""
+    removed = 0
+    leftovers = [*(project_dir / "cache" / "uploads").glob("*")]
+    leftovers += (project_dir / AUDIO_DIR).glob("*.part.wav")
+    for f in leftovers:
+        try:
+            f.unlink()
+            removed += 1
+        except OSError:
+            log.warning("could not remove leftover %s", f)
+    return removed

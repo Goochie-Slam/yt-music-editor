@@ -20,7 +20,7 @@ export function ExportPanel() {
   const project = useProject((s) => s.project);
   const path = useProject((s) => s.path);
   const change = useProject((s) => s.change);
-  const { selected, system, exportJobId, setExportJob } = useLibrary();
+  const { selected, system, exportJobId, exportRequesting, setExportJob } = useLibrary();
   const job = useJobs((s) => (exportJobId ? s.jobs[exportJobId] : undefined));
   if (!project) return null;
 
@@ -71,6 +71,7 @@ export function ExportPanel() {
           <input
             id="exp-pattern"
             type="text"
+            maxLength={200}
             value={pattern}
             onChange={(e) =>
               change((d) => void (d.libraryExport.pattern = e.target.value), "export-pattern")
@@ -99,7 +100,7 @@ export function ExportPanel() {
         </div>
         <button
           className="btn primary block"
-          disabled={!entries.length || !!running}
+          disabled={!entries.length || !!running || exportRequesting}
           onClick={() => void startExport(entries)}
         >
           {t("library.export.button", { n: entries.length })}

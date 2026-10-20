@@ -16,6 +16,7 @@ from app.core import proc
 from app.core.errors import AppError
 from app.core.jobs import JobContext
 from app.core.tools import parse_progress_line
+from app.core.util import new_id
 from app.messages import message
 
 MP3_BYTES_PER_SECOND = 320_000 / 8
@@ -55,13 +56,22 @@ def render_names(pattern: str, titles: list[str]) -> list[str]:
 
 
 def unique_path(folder: Path, stem: str, ext: str, taken: set[str]) -> Path:
-    """Never overwrite: an existing file — or one written earlier in this batch — gets (2), (3)…"""
+    """Never overwrite: an existing file — or one written earlier in this batch — gets (2), (3)…
+
+    The name is reserved by creating an empty file ("x" mode is atomic), so two exports into the
+    same folder at once can never pick the same name."""
     n, name = 1, stem
-    while name.casefold() in taken or (folder / f"{name}{ext}").exists():
+    while True:
+        out = folder / f"{name}{ext}"
+        if name.casefold() not in taken:
+            try:
+                out.open("x").close()
+                taken.add(name.casefold())
+                return out
+            except FileExistsError:
+                pass
         n += 1
         name = f"{stem} ({n})"
-    taken.add(name.casefold())
-    return folder / f"{name}{ext}"
 
 
 def mp3_args(ffmpeg: Path, entry: Entry, out: Path) -> list[proc.Arg]:
@@ -99,7 +109,7 @@ def export_mp3(
     for i, (entry, stem) in enumerate(zip(entries, names, strict=True), start=1):
         weight = entry.duration or 1.0
         out = unique_path(folder, stem, ".mp3", taken)
-        tmp = out.with_name(out.stem + ".part.mp3")
+        tmp = out.with_name(f"{out.stem}.{new_id(6)}.part.mp3")
         label = f"{i}/{len(entries)} · {out.name}"
         ctx.progress(done / total, label)
 
@@ -116,6 +126,7 @@ def export_mp3(
                 os.replace(tmp, out)
                 written.append(out.name)
             else:  # one bad file must not stop the other 24
+                out.unlink(missing_ok=True)  # the reserved, empty name
                 failed.append(
                     {
                         "title": entry.title,
@@ -123,6 +134,9 @@ def export_mp3(
                         "detail": r.stderr_text(300),
                     }
                 )
+        except BaseException:
+            out.unlink(missing_ok=True)
+            raise
         finally:
             tmp.unlink(missing_ok=True)
         done += weight

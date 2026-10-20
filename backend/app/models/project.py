@@ -91,7 +91,9 @@ class LibraryExport(Model):
     """Settings of the batch MP3 export (F1.4); remembered per project."""
 
     folder: str = ""  # empty = "<project folder>/export"
-    pattern: str = Field("{index} - {title}", min_length=1, max_length=200)
+    # no length rule here: an empty field while the user retypes must not block autosave;
+    # the export request validates it
+    pattern: str = "{index} - {title}"
 
 
 # --------------------------------------------------------------------------- mix

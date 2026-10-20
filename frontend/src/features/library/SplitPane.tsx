@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError, type TracklistParsed } from "../../api/client";
 import { t } from "../../i18n";
 import { useProject } from "../../store/project";
+import { useJobs } from "../../store/jobs";
 import { toast } from "../../store/toast";
 import { startExport } from "./actions";
 import { addToMix, formatDuration, segmentItems } from "./model";
@@ -21,7 +22,16 @@ export function SplitPane() {
   );
   const [sourceId, setSourceId] = useState("");
   const [text, setText] = useState("");
-  const [parsed, setParsed] = useState<TracklistParsed | null>(null);
+  // remember what a parse was for: a result is only used while text and source still match it
+  const [parsed, setParsed] = useState<
+    (TracklistParsed & { text: string; duration: number }) | null
+  >(null);
+  const seq = useRef(0);
+  const exportJobId = useLibrary((s) => s.exportJobId);
+  const exportRequesting = useLibrary((s) => s.exportRequesting);
+  const exportJob = useJobs((s) => (exportJobId ? s.jobs[exportJobId] : undefined));
+  const exporting =
+    exportRequesting || exportJob?.state === "queued" || exportJob?.state === "running";
   const [error, setError] = useState("");
 
   const source = sources.find((s) => s.id === sourceId) ?? sources[0];
@@ -32,11 +42,13 @@ export function SplitPane() {
       setParsed(null);
       return;
     }
+    const mine = ++seq.current;
     const timer = setTimeout(() => {
       api
         .parseTracklist(text, duration)
         .then((r) => {
-          setParsed(r);
+          if (mine !== seq.current) return; // a newer edit is on its way
+          setParsed({ ...r, text, duration });
           setError("");
         })
         .catch((e: unknown) => setError(e instanceof ApiError ? e.messageVi : String(e)));
@@ -47,12 +59,14 @@ export function SplitPane() {
   if (!project) return null;
   if (!source) return <p className="muted split-empty">{t("library.split.noSource")}</p>;
 
-  const segments = parsed?.segments ?? [];
-  const errors = parsed?.errors ?? [];
+  const current = parsed && parsed.duration === duration ? parsed : null;
+  const fresh = current?.text === text; // false for the ~250 ms after an edit
+  const segments = current?.segments ?? [];
+  const errors = current?.errors ?? [];
   // A line without a timestamp is usually a heading ("Tracklist:"), safe to skip. A wrong or
   // out-of-order timestamp is not: the previous segment would run into the next song.
   const blocking = errors.filter((e) => e.error !== "bad_format");
-  const canCut = segments.length > 0 && blocking.length === 0;
+  const canCut = fresh && segments.length > 0 && blocking.length === 0;
 
   const cut = () => {
     const items = segmentItems(source, segments);
@@ -155,7 +169,7 @@ export function SplitPane() {
             className="pb row"
             style={{ justifyContent: "flex-end", borderTop: "1px solid var(--border)" }}
           >
-            <button className="btn" disabled={!canCut} onClick={exportOnly}>
+            <button className="btn" disabled={!canCut || exporting} onClick={exportOnly}>
               {t("library.split.exportOnly")}
             </button>
             <button className="btn primary" disabled={!canCut} onClick={cut}>

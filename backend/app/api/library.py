@@ -124,17 +124,18 @@ def _submit_file(
     folder = _folder(request, project_id)
 
     def run(ctx: JobContext) -> dict[str, Any]:
-        try:
-            return {
-                "itemId": item_id,
-                **ingest.ingest_file(ffmpeg, ffprobe, folder, src, ctx).to_json(),
-            }
-        finally:
-            if delete_after:  # a dropped file's bytes were only a transport copy
-                src.unlink(missing_ok=True)
+        return {
+            "itemId": item_id,
+            **ingest.ingest_file(ffmpeg, ffprobe, folder, src, ctx).to_json(),
+        }
 
     job = _jobs(request).submit(
-        "ingest", title, run, meta={"projectId": project_id, "itemId": item_id}
+        "ingest",
+        title,
+        run,
+        meta={"projectId": project_id, "itemId": item_id},
+        # a dropped file's bytes are only a transport copy: gone however the job ends
+        cleanup=(lambda: src.unlink(missing_ok=True)) if delete_after else None,
     )
     return JobStarted(job_id=job.id)
 
@@ -251,7 +252,8 @@ def start_export(project_id: str, body: ExportBody, request: Request) -> JobStar
     """Batch MP3 320 kbps CBR without tags (F1.4), straight from the lossless cache."""
     ffmpeg, _ = _ffmpeg(_settings(request))
     project_dir = _folder(request, project_id)
-    target = Path(body.folder) if body.folder.strip() else project_dir / "export"
+    folder = body.folder.strip().strip('"').strip("'").strip()  # Explorer's "Copy as path"
+    target = Path(folder) if folder else project_dir / "export"
     if not target.is_absolute():
         raise AppError(400, "export_folder_invalid", body.folder, path=body.folder)
     export.render_names(body.pattern, ["x"])  # a bad pattern fails now, not inside the job

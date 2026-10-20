@@ -97,3 +97,21 @@ def test_light_lane_is_not_blocked_by_heavy_jobs() -> None:
     release.set()
     wait_for(lambda: all(b.state == JobState.DONE for b in blockers))
     mgr.shutdown()
+
+
+def test_cleanup_runs_even_when_cancelled_before_starting() -> None:
+    """A dropped file's copy must not stay on disk because its queued job was cancelled."""
+    from app.core.jobs import HEAVY_WORKERS
+
+    mgr = JobManager(EventBus())
+    release = threading.Event()
+    cleaned: list[str] = []
+    blockers = [mgr.submit("dl", "b", lambda _: release.wait(5)) for _ in range(HEAVY_WORKERS)]
+    queued = mgr.submit("ingest", "q", lambda _: "never", cleanup=lambda: cleaned.append("q"))
+    done = mgr.submit("ingest", "d", lambda _: "ok", cleanup=lambda: cleaned.append("d"))
+    mgr.cancel(queued.id)
+    release.set()
+    wait_for(lambda: queued.state == JobState.CANCELLED and done.state == JobState.DONE)
+    wait_for(lambda: sorted(cleaned) == ["d", "q"])
+    assert all(b.state == JobState.DONE for b in blockers)
+    mgr.shutdown()

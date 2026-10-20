@@ -15,12 +15,14 @@ import webbrowser
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import __version__
 from app.api import jobs, library, presets, projects, system, ws
+from app.audio import ingest
 from app.core.config import Settings, load_settings
 from app.core.errors import install_handlers
 from app.core.events import EventBus
@@ -52,6 +54,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
         bus.bind_loop(asyncio.get_running_loop())
+        for summary in app.state.projects.recent():  # no job is running yet
+            ingest.sweep_temp(Path(summary.path))
         yield
         job_manager.shutdown()
 

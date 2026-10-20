@@ -247,19 +247,35 @@ export function newItem(title: string, source: LibraryItem["source"]): LibraryIt
   };
 }
 
+/** Identity of a link: the site's own id, except for yt-dlp's generic extractor whose "id" is
+ * just the file name (a/mix.mp3 vs b/mix.mp3). Mirrors the backend's url_key(). */
+export function linkKey(s: { url: string; site: string; remoteId: string }): string[] {
+  const site = s.site.toLowerCase();
+  return site && site !== "generic" && s.remoteId ? [s.url, `${site}:${s.remoteId}`] : [s.url];
+}
+
 /** Already in the library? Same link (or same site id), or same file path. */
 export function isDuplicate(project: Project, source: LibraryItem["source"]): boolean {
   return project.library.some((i) => {
     const s = i.source;
     if (source.kind === "url" && s.kind === "url") {
-      return (
-        s.url === source.url ||
-        (!!source.remoteId && s.remoteId === source.remoteId && s.site === source.site)
-      );
+      const mine = new Set(linkKey(s));
+      return linkKey(source).some((k) => mine.has(k));
     }
     if (source.kind === "file" && s.kind === "file" && !source.uploaded)
       return s.path === source.path;
     return false;
+  });
+}
+
+/** Keep the first of items that share a key — a playlist can list one video twice. */
+export function uniqueBy<T>(xs: T[], keys: (x: T) => string[]): T[] {
+  const seen = new Set<string>();
+  return xs.filter((x) => {
+    const ks = keys(x);
+    if (ks.some((k) => seen.has(k))) return false;
+    for (const k of ks) seen.add(k);
+    return true;
   });
 }
 

@@ -116,15 +116,28 @@ class JobManager:
         *,
         lane: Lane = Lane.HEAVY,
         meta: dict[str, str] | None = None,
+        cleanup: Callable[[], None] | None = None,
     ) -> Job:
+        """`cleanup` runs once the job ends in any way — also when it is cancelled before it
+        ever started, which a `finally` inside `fn` would miss."""
         job = Job(new_id(), kind, title, meta=meta or {})
         with self._lock:
             self._jobs[job.id] = job
         self.emit(job)
-        self._pools[lane].submit(self._run, job, fn)
+        self._pools[lane].submit(self._run, job, fn, cleanup)
         return job
 
-    def _run(self, job: Job, fn: JobFn) -> None:
+    def _run(self, job: Job, fn: JobFn, cleanup: Callable[[], None] | None = None) -> None:
+        try:
+            self._run_inner(job, fn)
+        finally:
+            if cleanup is not None:
+                try:
+                    cleanup()
+                except Exception:
+                    log.exception("cleanup of job %s failed", job.id)
+
+    def _run_inner(self, job: Job, fn: JobFn) -> None:
         if job.cancel_event.is_set():
             job.state = JobState.CANCELLED
             self.emit(job)
