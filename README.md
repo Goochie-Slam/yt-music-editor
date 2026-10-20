@@ -4,6 +4,8 @@ App local (Windows) để sản xuất video playlist nhạc dài 1–3 tiếng:
 
 > Trạng thái: **M0 (benchmark render), M1 (khung app), M2 (tab Thư viện) xong**. Tiếp theo: M3 (Mix & transition). Kết quả benchmark: `bench/archive/`, quyết định trong `docs/DECISIONS.md`.
 
+**Người mới nhận dự án: đọc [`docs/HANDOFF.md`](docs/HANDOFF.md) trước** — trạng thái từng chức năng + quy trình làm tiếp.
+
 ## Chạy thử
 
 - **Windows:** double-click `packaging\windows\Start.bat` (cần [uv](https://docs.astral.sh/uv/) + Node 22).
