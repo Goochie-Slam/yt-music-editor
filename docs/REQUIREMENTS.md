@@ -68,7 +68,7 @@ Người dùng: 1 người, dùng local, không có tài khoản, không có clo
 
 | ID | Requirement | Ưu tiên |
 |---|---|---|
-| F1.1 | Kéo thả nhiều file/folder vào app. Hỗ trợ mọi định dạng FFmpeg decode được: `mp4 mkv mov avi webm flv wmv mp3 wav flac m4a aac ogg opus wma aiff` | P1 |
+| F1.1 | Kéo thả nhiều file/folder vào app. Hỗ trợ mọi định dạng FFmpeg decode được: `mp4 mkv mov avi webm flv wmv mp3 wav flac m4a aac ogg opus wma aiff`. Kéo thả sẽ sao chép file vào app; dán đường dẫn file / thư mục thì không sao chép (D-25) | P1 |
 | F1.2 | Dán **1 hoặc nhiều link** (mỗi dòng 1 link): YouTube, SoundCloud, Mixcloud và các site [yt-dlp hỗ trợ](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md). Link playlist → hiện danh sách bài để tick chọn | P1 |
 | F1.3 | Mỗi item hiển thị: tên, nguồn, định dạng, thời lượng, bitrate nguồn, trạng thái (đang tải / đang xử lý / xong / lỗi + lý do) | P1 |
 | F1.4 | Tick chọn item → **Xuất MP3 320kbps CBR** hàng loạt vào folder chọn. Pattern tên file: `{index} - {title}.mp3` (sửa được) | P1 |
@@ -322,7 +322,7 @@ Bắt buộc **audio-reactive thật** (FFT từ audio mix), không phải anima
 | N5 | UI mượt với 100 bài trong mix | Kéo thả không lag, mở Transition Editor < 300ms |
 | N6 | Preview ↔ render | Preview trên canvas **giống bản render** (cùng shader). Sai khác chấp nhận: chất lượng preview thấp hơn khi máy yếu |
 | N7 | Ổn định | Render 3 tiếng không rò bộ nhớ. RAM backend < 4GB |
-| N8 | Dung lượng tạm | Cache audio ~2GB / 3 tiếng (WAV). Hiện dung lượng cache, có nút dọn |
+| N8 | Dung lượng tạm | Cache audio ~4 GB / 3 tiếng (WAV float32 48 kHz stereo, D-23). Hiện dung lượng cache, có nút dọn (M7) |
 | N9 | Font | Chữ tiếng Việt có dấu hiển thị đúng trên preview **và** video render |
 | N10 | Bảo mật local | Server chỉ bind `127.0.0.1`, không mở ra mạng LAN |
 

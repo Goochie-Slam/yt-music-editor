@@ -24,6 +24,13 @@ jobs:
       - name: Install FFmpeg (Windows)
         if: runner.os == 'Windows'
         run: choco install ffmpeg -y --no-progress
+      - name: Get yt-dlp (link tests download from a local web server, not the internet)
+        shell: bash
+        run: |
+          mkdir -p bin
+          if [ "$RUNNER_OS" = "Windows" ]; then f=yt-dlp.exe; out=bin/yt-dlp.exe; else f=yt-dlp_linux; out=bin/yt-dlp; fi
+          curl -sSfL --retry 3 -o "$out" "https://github.com/yt-dlp/yt-dlp/releases/latest/download/$f"
+          chmod +x "$out"
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .

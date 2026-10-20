@@ -33,16 +33,23 @@ if not exist "backend\bin\yt-dlp.exe" (
     "Invoke-WebRequest 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe' -OutFile 'backend\bin\yt-dlp.exe'"
 )
 
-if not exist "frontend\dist\index.html" (
-  where npm >nul 2>nul || (
-    echo [!] Can cai Node.js 22 LTS de build giao dien: https://nodejs.org/
-    pause & exit /b 1
-  )
-  pushd frontend
-  call npm ci || (popd & pause & exit /b 1)
-  call npm run build || (popd & pause & exit /b 1)
-  popd
+rem Build the UI on every start: after updating the code the old build must never be served.
+rem npm ci only when the dependencies changed (it is the slow part).
+where npm >nul 2>nul || (
+  echo [!] Can cai Node.js 22 LTS de build giao dien: https://nodejs.org/
+  pause & exit /b 1
 )
+pushd frontend
+set "NEED_CI="
+if not exist "node_modules\.ytme-lock" set "NEED_CI=1"
+if not defined NEED_CI fc /b package-lock.json "node_modules\.ytme-lock" >nul 2>nul || set "NEED_CI=1"
+if defined NEED_CI (
+  call npm ci || (popd & pause & exit /b 1)
+  copy /y package-lock.json "node_modules\.ytme-lock" >nul
+)
+echo Dang build giao dien...
+call npm run build || (popd & pause & exit /b 1)
+popd
 
 cd backend
 uv sync --locked || (pause & exit /b 1)

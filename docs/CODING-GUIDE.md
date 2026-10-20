@@ -81,7 +81,7 @@ yt-music-editor/
 │   │   ├── models/              # pydantic — NGUỒN SỰ THẬT của schema
 │   │   │   ├── project.py  track.py  transition.py  element.py  render.py  preset.py
 │   │   ├── audio/
-│   │   │   ├── ingest.py        # probe + decode → WAV cache
+│   │   │   ├── ingest.py        # probe + decode → WAV cache, mở rộng đường dẫn thư mục
 │   │   │   ├── ytdlp.py         # tải link, playlist, cập nhật
 │   │   │   ├── tracklist.py     # parse "mm:ss Tên" + cắt
 │   │   │   ├── loudness.py      # loudnorm 2-pass, cache số đo
@@ -91,7 +91,7 @@ yt-music-editor/
 │   │   │   ├── mixer.py         # mix streaming theo block → WAV float
 │   │   │   ├── peaks.py         # waveform peaks cho UI
 │   │   │   ├── spectrum.py      # FFT từng frame cho visualizer
-│   │   │   └── export.py        # MP3 320 / AAC, chapters.txt
+│   │   │   └── export.py        # MP3 320 không tag, mẫu tên file (M2) · AAC, chapters.txt (M3+)
 │   │   ├── video/
 │   │   │   ├── scene.py         # project → danh sách layer cần vẽ tại thời điểm t
 │   │   │   ├── gl.py            # context moderngl, nạp shader, FBO, PBO readback
@@ -274,7 +274,9 @@ Hai bản cài đặt **PHẢI** cho cùng kết quả: test đọc `shared/fixt
 - Log đầy đủ command line + stderr vào file log khi lỗi.
 
 ### 6.3 Audio
-- **F1.11 — không nén lossy chồng lớp:** ingest decode **một lần** sang `cache/<id>.wav` (PCM 24-bit hoặc float32, **48 kHz stereo**). Mọi bước sau (cắt, normalize, mix) đọc từ WAV. Chỉ `export.py` được tạo MP3/AAC.
+- **F1.11 — không nén lossy chồng lớp:** ingest decode **một lần** sang `cache/audio/<key>.wav` (**float32, 48 kHz stereo**, RF64 khi > 4 GB — D-23) kèm `<key>.json` ghi thông tin nguồn. Mọi bước sau (cắt, normalize, mix) đọc từ WAV. Chỉ `export.py` được tạo MP3/AAC.
+- **Đoạn cắt theo tracklist** không có WAV riêng: item `segment` phát khoảng `start–end` của WAV file gốc (D-26). Đọc audio của một item luôn đi qua `audioOf()` (frontend) / tương đương ở backend.
+- **Job không ghi `project.json`** (D-24): job trả kết quả trong event, frontend ghi vào item bằng `patch()` (không tạo bước undo). Đừng thêm code backend sửa project trong lúc frontend đang autosave.
 - Cache key = hash của (nội dung file nguồn hoặc URL + format id) + tham số xử lý. Đổi tham số thì cache cũ không được dùng lại.
 - **Loudness:** `loudnorm` 2-pass để đo, lưu `{i, tp, lra}` vào project. Áp gain tuyến tính khi mix (không dùng loudnorm động lúc render vì nó làm méo dynamic).
 - **Mixer:** stream theo block (ví dụ 1 giây) bằng numpy — không load 3 tiếng vào RAM. Mỗi block: cộng các bài đang phát × gain envelope (từ `curves.py`) → ghi float32 WAV. Sau đó dùng FFmpeg `alimiter` (true-peak −1 dBTP, F2.15) rồi encode.
@@ -384,7 +386,7 @@ Hai bản cài đặt **PHẢI** cho cùng kết quả: test đọc `shared/fixt
 - **Xong khi:** CI xanh trên Windows; mở app → tạo project → đóng → mở lại vẫn còn.
 
 ### M2 — Thư viện · *~1.5 tuần* · F1.1–F1.11
-- Ingest file / folder, probe, decode WAV cache, peaks.
+- Ingest file / folder, probe, decode WAV cache. (Peaks chuyển sang M3 — D-31.)
 - yt-dlp: link đơn, playlist (modal tick chọn), tiến độ, hủy, lỗi tiếng Việt, cập nhật yt-dlp.
 - Cắt theo tracklist → thêm vào Mix; xuất MP3 320 CBR hàng loạt theo pattern tên.
 - **Xong khi:** acceptance 1 và 2 ở `REQUIREMENTS.md` §8 đạt.

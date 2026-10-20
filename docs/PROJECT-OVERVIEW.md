@@ -1,7 +1,7 @@
 # YT Music Editor — Project Overview
 
 > Dành cho developer mới tham gia dự án. Đọc file này trước, sau đó đọc [`CODING-GUIDE.md`](./CODING-GUIDE.md).
-> Cập nhật: 2026-10-15 · Trạng thái: **M0 (benchmark) xong · M1 (khung app) xong** · tiếp theo: M2
+> Cập nhật: 2026-10-20 · Trạng thái: **M0, M1, M2 (Thư viện) xong** · M2 chờ PO thử link YouTube thật · tiếp theo: M3 (Mix)
 
 ---
 
@@ -123,7 +123,7 @@ Chi tiết: mục 10 của [`CODING-GUIDE.md`](./CODING-GUIDE.md).
 | Thiết kế | Requirements v0.3, UI/UX v0.3, mockup | ✅ Xong |
 | **M0 — Spike S1** | Benchmark render trên RTX 3050 6GB → chốt kiến trúc render | ✅ Xong — cách A, 1080p 4.75× realtime (D-21) |
 | M1 — Skeleton | Repo, CI, backend + frontend khung, project/autosave, đóng gói Windows | ✅ Xong |
-| M2 — Thư viện | Ingest, yt-dlp, tracklist, xuất MP3 | ⬜ |
+| M2 — Thư viện | Ingest, yt-dlp, tracklist, xuất MP3 | ✅ Code xong · chờ PO thử link YouTube / SoundCloud thật trên máy |
 | M3 — Mix | Transition, preset, normalize, trim, nghe thử, xuất mix | ⬜ |
 | M4 — Video core | Renderer, scene, artwork/nền, visualizer, chữ, canvas, timeline | ⬜ |
 | M5 — Effect & Overlay | 6 effect, 3 loại overlay, preset A–F | ⬜ |

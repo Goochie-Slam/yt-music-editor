@@ -73,8 +73,11 @@ Settings (global): folder mặc định, yt-dlp update, encoder, cache, quản l
 ```
 
 - **Dán link playlist** → mở modal danh sách bài, có "Chọn tất cả" và ô tìm kiếm → "Thêm N bài".
+- Ô dán nhận cả **đường dẫn file / thư mục** (mỗi dòng 1 cái, có hoặc không có dấu `"` của "Copy as path"). Thư mục được quét cả thư mục con, chỉ lấy file audio/video. Đường dẫn không sao chép file; kéo thả thì sao chép (D-25) — UI có dòng nhắc cho file lớn.
+- Bài trùng (cùng link, cùng ID trên trang, cùng đường dẫn) được bỏ qua kèm thông báo.
+- Nhấp đúp tên bài để đổi tên (dùng cho `{title}` khi xuất MP3).
 - Cột trạng thái: `⟳ %` đang tải/xử lý · `✓` xong · `⚠` bitrate thấp (hover xem giải thích) · `✕` lỗi (hover xem lý do + nút Thử lại).
-- **Cắt theo tracklist** (sub-tab): chọn file nguồn → textarea dán tracklist → bảng preview các đoạn (tên, bắt đầu, kết thúc, độ dài) báo lỗi từng dòng → nút chính **"Cắt & thêm vào Mix →"**, nút phụ "Chỉ xuất MP3". Đoạn cắt giữ lossless trong cache, không qua MP3 trung gian.
+- **Cắt theo tracklist** (sub-tab): chọn file nguồn → textarea dán tracklist → bảng preview các đoạn (tên, bắt đầu, kết thúc, độ dài) báo lỗi từng dòng → nút chính **"Cắt & thêm vào Mix →"**, nút phụ "Chỉ xuất MP3". Đoạn cắt giữ lossless trong cache, không qua MP3 trung gian. Dòng không có mốc thời gian bị bỏ qua (hiện mờ); mốc sai / không tăng dần / vượt độ dài file hiện đỏ và chặn nút cắt (D-29).
 - Phím tắt: `Ctrl+A` chọn tất cả, `Del` xóa khỏi thư viện (không xóa file gốc).
 
 ### ② Mix
