@@ -1,17 +1,16 @@
 import { useEffect } from "react";
 import { connectEvents } from "./api/ws";
+import { Toasts } from "./components/Toasts";
+import { startLibrarySync } from "./features/library/actions";
+import { LibraryTab } from "./features/library/LibraryTab";
 import { Home } from "./features/home/Home";
 import { Placeholder } from "./features/placeholder/Placeholder";
 import { SettingsDialog } from "./features/settings/SettingsDialog";
 import { TopBar } from "./features/shell/TopBar";
+import { isTyping } from "./components/keys";
 import { t } from "./i18n";
 import { useProject } from "./store/project";
 import { TABS, useUi } from "./store/ui";
-
-function isTyping(e: KeyboardEvent): boolean {
-  const el = e.target as HTMLElement | null;
-  return !!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
-}
 
 /** docs/UI-UX.md §7 */
 function useShortcuts() {
@@ -41,14 +40,18 @@ export function App() {
   const project = useProject((s) => s.project);
   const { tab, connected, settingsOpen } = useUi();
   useEffect(() => connectEvents(), []);
+  useEffect(() => startLibrarySync(), []);
   useShortcuts();
 
   return (
     <div className="app">
       {project ? <TopBar /> : <div />}
       {!connected ? <div className="banner">{t("conn.lost")}</div> : <div />}
-      <main>{project ? <Placeholder tab={tab} /> : <Home />}</main>
+      <main>
+        {!project ? <Home /> : tab === "library" ? <LibraryTab /> : <Placeholder tab={tab} />}
+      </main>
       {settingsOpen && <SettingsDialog />}
+      <Toasts />
     </div>
   );
 }

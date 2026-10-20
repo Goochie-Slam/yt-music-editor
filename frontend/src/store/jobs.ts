@@ -12,6 +12,8 @@ export interface JobEvent {
   message: string;
   error: { code: string; message_vi: string; detail: string } | null;
   result: unknown;
+  meta: Record<string, string>;
+  createdAt: number; // seconds since epoch (server clock = this machine)
 }
 
 interface JobsStore {

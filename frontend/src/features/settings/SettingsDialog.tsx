@@ -10,6 +10,22 @@ export function SettingsDialog() {
   const [error, setError] = useState("");
   const [jobId, setJobId] = useState<string | null>(null);
   const job = useJobs((s) => (jobId ? s.jobs[jobId] : undefined));
+  const [updateId, setUpdateId] = useState<string | null>(null);
+  const update = useJobs((s) => (updateId ? s.jobs[updateId] : undefined));
+  const updating = update && (update.state === "queued" || update.state === "running");
+
+  useEffect(() => {
+    // the version shown must be the new one once the update finished
+    if (update?.state === "done") void api.system().then(setInfo);
+  }, [update?.state]);
+
+  const startUpdate = async () => {
+    try {
+      setUpdateId((await api.updateYtdlp()).jobId);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.messageVi : String(e));
+    }
+  };
 
   useEffect(() => {
     api
@@ -56,7 +72,33 @@ export function SettingsDialog() {
               </dd>
               <dt>{t("settings.ytdlp")}</dt>
               <dd className={info.ytdlp.path ? "" : "warn"}>
-                {info.ytdlp.version ?? t("settings.missing")}
+                <div className="row">
+                  <span>{info.ytdlp.version ?? t("settings.missing")}</span>
+                  {info.ytdlp.path && (
+                    <button
+                      className="btn sm"
+                      disabled={!!updating}
+                      onClick={() => void startUpdate()}
+                    >
+                      {t("settings.ytdlpUpdate")}
+                    </button>
+                  )}
+                </div>
+                {update?.state === "running" && (
+                  <span className="muted small">{update.message}</span>
+                )}
+                {update?.state === "done" && (
+                  <span className="ok small">{(update.result as { message: string }).message}</span>
+                )}
+                {update?.error && <span className="err small">{update.error.message_vi}</span>}
+              </dd>
+              <dt>{t("settings.jsRuntime")}</dt>
+              <dd className={info.jsRuntime.deno || info.jsRuntime.node ? "ok" : "warn"}>
+                {info.jsRuntime.deno
+                  ? t("settings.jsRuntimeOk", { name: "Deno" })
+                  : info.jsRuntime.node
+                    ? t("settings.jsRuntimeOk", { name: "Node.js" })
+                    : t("settings.jsRuntimeMissing")}
               </dd>
             </dl>
           )}

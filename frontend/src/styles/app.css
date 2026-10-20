@@ -83,6 +83,9 @@ input[type="text"]:focus {
   border-radius: 10px;
 }
 .ph {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--border);
   font-size: 11px;
@@ -307,4 +310,352 @@ main {
 .kv dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+/* shared bits used by the library */
+.small {
+  font-size: 12px;
+}
+.badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--panel-3);
+  color: var(--muted);
+  font-weight: 600;
+}
+.btn.block {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.btn.link,
+button.link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--accent-2);
+  cursor: pointer;
+  font-size: 12px;
+}
+.seg {
+  display: inline-flex;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2px;
+}
+.seg button {
+  background: none;
+  border: 0;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--muted);
+}
+.seg button.on {
+  background: var(--panel-3);
+  color: var(--text);
+}
+.note {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--panel-2);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+  margin-bottom: 14px;
+}
+.note.warn {
+  color: var(--warn);
+  border-color: #fbbf2466;
+}
+.note.err {
+  color: var(--err);
+  border-color: #f8717166;
+  margin: 0 14px 10px;
+}
+textarea,
+select {
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 7px 9px;
+  outline: none;
+}
+textarea:focus,
+select:focus {
+  border-color: var(--accent);
+}
+input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  text-align: left;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  z-index: 1;
+}
+th,
+td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+tr:hover td {
+  background: #ffffff05;
+}
+.run {
+  color: var(--accent-2);
+}
+
+/* toasts */
+.toasts {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: grid;
+  gap: 8px;
+  z-index: 60;
+  max-width: 440px;
+}
+.toast {
+  background: var(--panel-3);
+  border: 1px solid var(--border);
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 6px 24px #0008;
+}
+.toast.ok {
+  border-color: var(--ok);
+}
+.toast.warn {
+  border-color: var(--warn);
+}
+.toast.err {
+  border-color: var(--err);
+  color: var(--err);
+}
+
+/* ① library */
+.lib {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+  padding: 14px;
+  height: 100%;
+  min-height: 0;
+}
+.lib-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+}
+.lib-head {
+  margin-bottom: 12px;
+}
+.lib-import {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.drop {
+  border: 1.5px dashed var(--border-hover);
+  border-radius: 10px;
+  padding: 16px;
+  display: grid;
+  gap: 10px;
+  text-align: center;
+  background: #171a2188;
+}
+.drop .row {
+  justify-content: center;
+}
+.drop textarea {
+  width: min(560px, 100%);
+  height: 60px;
+  resize: vertical;
+}
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  background: #7c5cff22;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  z-index: 30;
+}
+.tbl-wrap {
+  overflow: auto;
+  flex: 1;
+  margin-top: 12px;
+  min-height: 0;
+}
+.tbl-tools {
+  padding: 0 4px 8px;
+}
+.lib-table td.name {
+  max-width: 320px;
+}
+.lib-table .title {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: text;
+}
+.lib-table tr.sel td {
+  background: #7c5cff0d;
+}
+.lib-table tr.resolving td {
+  font-style: italic;
+}
+.cell-edit {
+  padding: 3px 6px !important;
+}
+.src {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  max-width: 220px;
+}
+.src span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex: none;
+}
+.mini-prog {
+  width: 60px;
+  height: 4px;
+  background: var(--panel-3);
+  border-radius: 2px;
+  display: inline-block;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.mini-prog i {
+  display: block;
+  height: 100%;
+  background: var(--accent-2);
+}
+.empty {
+  text-align: center;
+  padding: 30px 0;
+}
+.lib-side {
+  align-self: start;
+}
+.export-job {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+.export-job ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+.path {
+  overflow-wrap: anywhere;
+}
+
+/* tracklist split */
+.split {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.split-empty {
+  padding: 30px;
+  text-align: center;
+}
+.split select {
+  min-width: 320px;
+}
+.tl-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+  margin-top: 12px;
+}
+.tl-grid .col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.tl-grid textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 260px;
+  resize: none;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.tl-grid .scroll {
+  overflow: auto;
+  flex: 1;
+  min-height: 120px;
+}
+.lbl {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+/* playlist picker */
+.pl-modal {
+  width: 560px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pl-modal .list {
+  overflow: auto;
+  max-height: 48vh;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.pl-modal label.item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  cursor: pointer;
+}
+.pl-modal label.item.off {
+  opacity: 0.5;
+  cursor: default;
+}
+.grow {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

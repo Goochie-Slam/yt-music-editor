@@ -1,6 +1,13 @@
 {
-  "app": { "name": "YT Music Editor" },
-  "steps": { "library": "Thư viện", "mix": "Mix", "video": "Video", "export": "Xuất" },
+  "app": {
+    "name": "YT Music Editor"
+  },
+  "steps": {
+    "library": "Thư viện",
+    "mix": "Mix",
+    "video": "Video",
+    "export": "Xuất"
+  },
   "save": {
     "saved": "✓ Đã lưu",
     "saving": "Đang lưu…",
@@ -33,7 +40,8 @@
     "mix": "Sắp xếp bài, transition, normalize, nghe thử, xuất mix.",
     "video": "Canvas + timeline layer: artwork, overlay, effect, visualizer, chữ.",
     "export": "Render MP4 1080p / 1440p / 4K, hàng đợi, resume.",
-    "milestone": "Đang xây dựng — {milestone}"
+    "milestone": "Đang xây dựng — {milestone}",
+    "mixCount": "Mix hiện có {n} bài · {duration} (chưa trừ phần chồng transition)"
   },
   "settings": {
     "title": "Cài đặt & hệ thống",
@@ -49,8 +57,131 @@
     "selftest": "Kiểm tra FFmpeg",
     "selftestDone": "FFmpeg hoạt động bình thường.",
     "cancel": "Hủy",
-    "close": "Đóng"
+    "close": "Đóng",
+    "ytdlpUpdate": "Cập nhật yt-dlp",
+    "jsRuntime": "JavaScript (YouTube)",
+    "jsRuntimeOk": "{name} ✓",
+    "jsRuntimeMissing": "Không có Node.js / Deno — tải từ YouTube có thể lỗi"
   },
-  "conn": { "lost": "Mất kết nối với app — đang thử lại…" },
-  "errors": { "network": "Không kết nối được tới app. App có đang chạy không?" }
+  "conn": {
+    "lost": "Mất kết nối với app — đang thử lại…"
+  },
+  "errors": {
+    "network": "Không kết nối được tới app. App có đang chạy không?"
+  },
+  "library": {
+    "modeImport": "Thêm file / link",
+    "modeSplit": "Cắt theo tracklist",
+    "ytdlpVersion": "yt-dlp {version}",
+    "ytdlpMissing": "Chưa có yt-dlp — không tải được link",
+    "drop": {
+      "title": "Kéo thả file hoặc thư mục vào đây",
+      "formats": "mp4 mkv mov avi webm mp3 wav flac m4a aac ogg opus wma aiff…",
+      "or": "hoặc dán link / đường dẫn — mỗi dòng 1 cái (YouTube, SoundCloud, Mixcloud, playlist, C:\\Nhạc\\…)",
+      "placeholder": "https://www.youtube.com/playlist?list=…\nhttps://soundcloud.com/…\nD:\\Nhạc\\Album",
+      "fetch": "Lấy",
+      "fetchHint": "Ctrl+Enter",
+      "pickFiles": "Chọn file…",
+      "pickFolder": "Chọn thư mục…",
+      "tip": "Mẹo: file rất lớn (video vài GB) thì dán đường dẫn thay vì kéo thả — kéo thả phải sao chép cả file vào app. Trong Explorer: Shift + chuột phải → Copy as path.",
+      "overlay": "Thả để thêm vào thư viện",
+      "empty": "Chưa có bài nào. Kéo thả file vào đây hoặc dán link ở trên."
+    },
+    "table": {
+      "index": "#",
+      "title": "Tên",
+      "source": "Nguồn",
+      "format": "Định dạng",
+      "duration": "Dài",
+      "kbps": "kbps",
+      "status": "Trạng thái",
+      "selectAll": "Chọn tất cả",
+      "selectedOf": "Đã chọn {n} / {total}",
+      "remove": "Xóa khỏi thư viện",
+      "removeHint": "Del — không xóa file gốc",
+      "rename": "Nhấp đúp để đổi tên",
+      "resolving": "Đang lấy thông tin…"
+    },
+    "status": {
+      "ready": "✓ Sẵn sàng",
+      "low": "⚠ Bitrate thấp",
+      "lowHint": "Bitrate nguồn {kbps} kbps. Xuất 320 kbps chỉ làm file nặng hơn, không làm chất lượng tốt hơn nguồn.",
+      "queued": "Đang chờ…",
+      "running": "⟳ {pct}%",
+      "uploading": "⇡ Đang chép {pct}%",
+      "error": "✕ {message}",
+      "needsDrop": "Kéo thả lại file này",
+      "needsDropHint": "Trình duyệt không cho app biết đường dẫn của file đã kéo thả, nên sau khi tải lại trang phải kéo thả lại.",
+      "interrupted": "Chưa xong",
+      "waitingParent": "Chờ file gốc",
+      "cancelled": "Đã hủy",
+      "retry": "Thử lại",
+      "cancel": "Hủy"
+    },
+    "playlist": {
+      "title": "Playlist: {title}",
+      "count": "{n} bài",
+      "search": "Tìm trong playlist…",
+      "all": "Chọn tất cả",
+      "none": "Bỏ chọn tất cả",
+      "unavailable": "không tải được",
+      "add": "Thêm {n} bài",
+      "cancel": "Bỏ qua"
+    },
+    "split": {
+      "source": "File nguồn",
+      "noSource": "Chưa có file nào sẵn sàng. Thêm file mix dài (hoặc link Mixcloud / YouTube) ở tab \"Thêm file / link\" trước.",
+      "paste": "Dán tracklist (mm:ss hoặc h:mm:ss + tên bài, mỗi dòng 1 bài)",
+      "placeholder": "00:00 Intro — Blue Train\n04:12 Autumn Café\n1:05:20 Late Drive",
+      "preview": "Preview đoạn cắt",
+      "count": "{n} đoạn",
+      "countErr": "{n} đoạn · {e} lỗi",
+      "start": "Bắt đầu",
+      "end": "Kết thúc",
+      "length": "Dài",
+      "line": "Dòng {n}",
+      "skipped": "bỏ qua (không có mốc thời gian)",
+      "errors": {
+        "bad_format": "không có mốc thời gian",
+        "bad_seconds": "giây phải nhỏ hơn 60",
+        "not_increasing": "mốc thời gian phải tăng dần",
+        "past_end": "vượt quá độ dài file nguồn"
+      },
+      "fixFirst": "Sửa {n} dòng lỗi trước khi cắt — nếu không, đoạn trước sẽ dài sang bài sau.",
+      "exportOnly": "Chỉ xuất MP3",
+      "cut": "Cắt & thêm vào Mix →",
+      "note": "Đoạn cắt dùng thẳng bản lossless (WAV) trong cache, chính xác tới từng mẫu âm thanh — không đi qua MP3 trung gian.",
+      "done": "Đã cắt {n} đoạn và thêm vào cuối Mix"
+    },
+    "export": {
+      "title": "Xuất MP3",
+      "quality": "Chất lượng",
+      "qualityValue": "MP3 · 320 kbps CBR",
+      "fixed": "cố định",
+      "folder": "Thư mục xuất",
+      "folderDefault": "Mặc định: {path}",
+      "pattern": "Mẫu tên file",
+      "example": "Ví dụ: {name} · không ghi tag",
+      "lowWarn": "⚠ {n} bài có bitrate nguồn ≤ {kbps} kbps. Xuất 320 kbps chỉ làm file nặng hơn, không hay hơn.",
+      "selected": "Đã chọn",
+      "selectedValue": "{n} bài · ~{size}",
+      "notReady": "{n} bài đã chọn chưa sẵn sàng sẽ bị bỏ qua",
+      "button": "Xuất {n} file MP3",
+      "toMix": "Thêm {n} bài vào Mix →",
+      "jobTitle": "Xuất {n} file MP3",
+      "done": "✓ Đã xuất {n} file",
+      "failed": "{n} file lỗi:",
+      "open": "Mở thư mục",
+      "cancel": "Hủy"
+    },
+    "toast": {
+      "duplicates": "Bỏ qua {n} bài đã có trong thư viện.",
+      "missing": "Không tìm thấy {n} đường dẫn, ví dụ: {first}",
+      "linkFailed": "{url}: {message}",
+      "dropAgain": "\"{title}\" cần được kéo thả lại.",
+      "removed": "Đã xóa {n} bài khỏi thư viện · Ctrl+Z để hoàn tác",
+      "removedWithMix": "Đã xóa {n} bài khỏi thư viện và {m} bài khỏi Mix · Ctrl+Z để hoàn tác",
+      "addedToMix": "Đã thêm {n} bài vào cuối Mix"
+    }
+  }
 }

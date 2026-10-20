@@ -1,4 +1,4 @@
-import type { Draft } from "immer";
+import { produce, type Draft } from "immer";
 import { create } from "zustand";
 import { api, ApiError } from "../api/client";
 import type { Project } from "../api/types.gen";
@@ -17,6 +17,11 @@ interface ProjectStore {
   close: () => void;
   /** Every edit to the project goes through here (undo + autosave). */
   change: (recipe: (draft: Draft<Project>) => void, key?: string) => void;
+  /**
+   * Results that arrive from background jobs (decoded file, duration…). Saved, but not an undo
+   * step: undoing "import" must not be needed twice, and undo must never drop a finished decode.
+   */
+  patch: (recipe: (draft: Draft<Project>) => void) => void;
   undo: () => void;
   redo: () => void;
   saveNow: () => Promise<void>;
@@ -55,6 +60,15 @@ export const useProject = create<ProjectStore>((set, get) => {
       const r = record(project, hist, recipe, key);
       if (r.state === project) return;
       set({ project: r.state, hist: r.hist });
+      touched();
+    },
+
+    patch: (recipe) => {
+      const { project } = get();
+      if (!project) return;
+      const next = produce(project, recipe);
+      if (next === project) return;
+      set({ project: next });
       touched();
     },
 
